@@ -1,0 +1,286 @@
+
+require:
+   "earlgrey/5" as eg
+   "earlgrey/lib5/expand" ->
+      topscope
+   "repple" ->
+      Repl, DOM
+
+provide:
+   setup
+
+globals:
+   System
+   document, window, alert, setTimeout, Element
+   decodeURIComponent
+
+
+parseQuery{q} =
+   decode{s} = decodeURIComponent{s.replace{"+", " "}}
+   rval = {=}
+   search = R.g"([^&=]+)=?([^&]*)"
+   var m = search.exec{q}
+   while m:
+      {_, k, v} = m
+      rval[decode{k}] = decode{v}
+      m = search.exec{q}
+   rval
+
+
+egrepl{elements} =
+
+   globvar = "$eg$global"
+   gene = eg.Generator{true, globvar}
+   _ev = eg.evaluator with {
+      globvar = globvar
+      global = global
+      filename = "<repl>"
+      showname = "<repl>"
+      cwd = "<repl>"
+   }
+
+   evopts = {to5 = true, noboil = true}
+   ev{text} =
+      let code = gene.generate{eg.Source{text, "<repl>"}, evopts}
+      _ev{code}
+   evi{text} =
+      let code = gene.generateInteractive{eg.Source{text, "<repl>"}, evopts}
+      _ev{code}
+
+   repl = Repl with {
+      elements = elements
+      async! eval{text} =
+         try:
+            res = await evi{text}
+            #success{res}
+         catch e:
+            #failure{e}
+   }
+
+   glob = global
+
+   repl.setenv{values} =
+      items{values} each {name, value} ->
+         gene.env.bind{topscope, name, #variable{name}}
+         glob[name] = value
+      undefined
+
+   repl.setenv with {
+      $io = {}
+      $currenti = -1
+      System = System
+      DOM = DOM
+   }
+
+   repl.eval with S[
+      globals:
+         window, document, JSON
+
+      wait = promisify with {d, f} -> setTimeout.call{null, f, d}
+
+      _load{match url} =
+         R".js$"? ->
+            new Promise with {resolve, reject} ->
+               document.getElementsByTagName{"head"}[0].appendChild with
+                  DOM with script %
+                     async = true
+                     type = "text/javascript"
+                     src = url
+                     onload{} = resolve{undefined}
+         R".css$"? ->
+            document.getElementsByTagName{"head"}[0].appendChild with
+               DOM with link %
+                  rel = "stylesheet"
+                  type = "text/css"
+                  href = url
+            undefined
+         else ->
+            throw E.unknown_resource_type{url}
+
+      macro $out{match}:
+         do:
+            globals: $currenti
+         #void{} ->
+            `$io[^=$currenti]`
+         expr ->
+            `$io[^=$currenti][^expr]`
+
+      macro print{expr}:
+         ;; out = @mark{`$out`}
+         ;; `t = ^expr, $out.log{t}, t`
+         `t = ^expr, $io[$currenti].log{t}, t`
+
+      macro __require{#data{expr}}:
+         ```
+         t = ^expr
+         name = match t:
+            RegExp{"^raw:"}? x -> x.slice{4}
+            RegExp{":"}? x -> x
+            x -> "npm:" + x
+         await System.import{name}
+         ```
+
+      macro load{url}:
+         `await _load{^url}`
+
+   ]
+
+   repl
+
+
+setup{} =
+
+   repl = egrepl with {
+      box = document.getElementById{"box"}
+      target = document.getElementById{"interactive"}
+      inputline = document.getElementById{"inputline"}
+      textarea = document.getElementById{"code"}
+   }
+
+   ;; cards = Cards{repl} with Nav{document.getElementById{"help"}}
+   ;; __raw_cards each {topic, desc, contents} ->
+   ;;    cards.register{topic, desc, contents}
+   ;; cards.make_index{}
+
+   ;; engine = quaint.Engine{quaint.dispatch}
+
+   ;; repl.setenv{{...}} with
+   ;;    __qengine = engine
+   ;;    __cards = cards.cards
+   ;;    __repl = repl
+   ;;    repl = repl
+   ;;    DOM = DOM
+   ;;    $libs = {=}
+   ;;    jQuery = jquery
+   ;;    $ = jquery
+
+   ;; repl.eval with S[
+
+   ;;    globals:
+   ;;       alert, document, window
+
+   ;;    _next{} =
+   ;;       "There is no tutorial yet."
+
+   ;;    _help{match topic} =
+   ;;       when __cards[topic] ->
+   ;;          __cards[topic][1]{0}
+   ;;       else ->
+   ;;          "Invalid help topic: \"" + topic + "\""
+
+   ;;    macro next{_}:
+   ;;       `_next{}`
+
+   ;;    macro help{match}:
+   ;;       #void{} -> `_help{"help"}`
+   ;;       topic -> `_help{^topic}`
+
+   ;;    macro Q{arg}:
+   ;;       `__qengine.run{^arg}`
+
+   ;;    loader{url, fn} =
+   ;;       script = DOM with script %
+   ;;          async = true
+   ;;          src = url
+   ;;          type = "text/javascript"
+   ;;          onload = fn
+   ;;       document.head.appendChild{script}
+   ;;       undefined
+
+   ;;    macro load{`^url as ^v`}:
+   ;;       ```
+   ;;          splice:
+   ;;             globals: ^v
+   ;;             [
+   ;;                url = ^url
+   ;;                if $libs[url]:
+   ;;                   then:
+   ;;                      $out.log with .note %
+   ;;                         "\"" + url + "\" is already loaded."
+   ;;                   else:
+   ;;                      $libs[url] = true
+   ;;                      __repl.lock{}
+   ;;                      timer = setTimeout{f, 5000} where f{} =
+   ;;                         $out.log with .warning %
+   ;;                            "Loading \"" + url + "\" is taking more than five seconds."
+   ;;                            "A green box will appear here once if/when it is loaded."
+   ;;                         __repl.unlock{}
+   ;;                         $libs[url] = false
+   ;;                      loader{url} with {} ->
+   ;;                         $out.log with .success %
+   ;;                            "Loaded \"" + url + "\"!"
+   ;;                         __repl.unlock{}
+   ;;                         clearTimeout{timer}
+   ;;             ]
+   ;;       ```
+   ;; ]
+
+   ;; repl.process{"help", false}
+
+   ;; q = parseQuery{window.location.search.substring{1}}
+   ;; if q.eval:
+   ;;    repl.process{q.eval}
+
+   repl.cm.focus{}
+   repl
+
+
+
+
+
+
+
+
+;; macro acquire_cards{#data{*filenames}}:
+
+;;    print .hello
+;;    console.log{___node.require}
+
+;;    require:
+;;       fs, quaint
+
+;;    print .there
+
+;;    globals: __dirname
+
+;;    dirname = __dirname
+
+;;    results = #data{}
+;;    dispatch = quaint.dispatch.clone{}
+;;    components = {...} with
+
+;;       "topic --> contents"{engine, node, {=> topic, => contents}} =
+;;          results.push with #data with
+;;             #value{topic.location.text{}}
+;;             #value{""}
+;;             #value{contents.location.text{}}
+
+;;       "topic --> desc --> contents"{engine, node, {=> topic, => desc, => contents}} =
+;;          results.push with #data with
+;;             #value{topic.location.text{}}
+;;             #value{desc.location.text{}}
+;;             #value{contents.location.text{}}
+
+;;    items{components} each {spec, fn} ->
+;;       dispatch.register with quaint.Spec{spec, fn}
+
+;;    Q = quaint.Engine{dispatch}
+
+;;    filenames each #value{filename} ->
+;;       f = dirname + "/" + filename
+;;       contents = fs.readFileSync{f, .utf8}
+;;       Q.run{contents}
+
+;;    ;; quaint mucks this up for some reason
+;;    set __dirname = dirname
+
+;;    results
+
+
+;; __raw_cards =
+;;    acquire_cards with
+;;       "basic.q"
+;;       "examples.q"
+;;       "advanced.q"
+
+

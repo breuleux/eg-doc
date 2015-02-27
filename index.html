@@ -1,0 +1,31 @@
+<!doctype html>
+
+<html>
+  <title>Earl Grey</title>
+  <head>
+    <link rel="stylesheet" type="text/css" href="style/codemirror.css" />
+    <link rel="stylesheet" type="text/css" href="style/repl.css" />
+    <script src="https://jspm.io/system@0.14.js"></script>
+    <script type="text/javascript" src="repl.js"></script>
+  </head>
+  <body>
+
+    <div id="help">
+    </div>
+
+    <div id="box">
+      <div id="interactive">
+      </div>
+
+      <div id="inputline" class="in hasinput">
+        <div class="inbanner"></div>
+        <div id="inputbox"><textarea id="code"></textarea></div>
+      </div>
+    </div>
+
+    <script>
+      repl = require("main").setup();
+    </script>
+
+  </body>
+</html>

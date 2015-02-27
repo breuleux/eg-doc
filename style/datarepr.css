@@ -1,0 +1,350 @@
+
+
+/* Set fonts */
+.true, .false, .null, .undefined, .num, .str, .name, .regexp {
+    font-family: 'Cousine', monospace;
+    white-space: pre-wrap;
+}
+
+/* Primitives */
+
+.true, .false, .null, .undefined, .num {
+    font-weight: bold;
+}
+
+.true:hover, .false:hover, .null:hover, .undefined:hover, .str:hover {
+    background-color: #eee;
+}
+
+.true { color: #080; }
+.false { color: #f00; }
+.null { color: #888; }
+.undefined { color: #888; }
+.num { color: #00f; }
+.str {
+    color: #000;
+    /* border-bottom: 2px dotted #888; */
+    white-space: pre;
+    max-height: 200px;
+    overflow: auto;
+}
+/* .str::before { content: "\""; color: #888; } */
+/* .str::after { content: "\""; color: #888; } */
+
+.function {
+    color: blue;
+}
+.function:before {
+    content: "function ";
+}
+
+
+/* Arrays */
+
+.array {
+    display: inline-block;
+    border: 2px solid #aaa;
+    overflow: auto;
+    margin: 2px;
+    padding: 0px;
+    background-color: #fff;
+}
+
+.array > * {
+    display: inline-block;
+    padding: 3px;
+    vertical-align: middle;
+}
+
+.array > :nth-child(odd) {
+    background-color: #fff;
+}
+
+.array > :nth-child(even) {
+    background-color: #eef;
+}
+
+.container-array {
+    background-color: #fff !important;
+}
+.container-instance {
+    background-color: #fff !important;
+}
+.container-class {
+    background-color: #fff !important;
+}
+.container-object {
+    background-color: #fff !important;
+}
+.container-collapsed {
+    background-color: #fff !important;
+}
+
+
+
+/* Objects */
+
+.object {
+    display: inline-table;
+    border: 2px solid #88f;
+    padding: 0px;
+    margin: 2px;
+    background-color: #fff;
+}
+
+.object > .assoc {
+    display: table-row;
+}
+
+.object > .assoc > * {
+    display: table-cell;
+    padding-left: 3px;
+    padding-right: 3px;
+    /* padding: 2px; */
+}
+
+.object > .assoc > :first-child {
+    /* background-color: #ddf; */
+    font-weight: bold;
+    border-right: 1px solid black;
+    vertical-align: middle;
+}
+
+
+/* Classes and instances */
+
+.instance, .class {
+    display: inline-block;
+}
+
+.instance > .object, .class > .object {
+    margin: 0px;
+}
+
+.instance .name, .class .name {
+    display: block;
+    background-color: #88f;
+    padding-left: 3px;
+    padding-right: 3px;
+    font-weight: bold;
+    color: white;
+}
+
+.class > .name::before {
+    content: "class ";
+}
+
+
+/* Empty objects */
+
+.str:empty::before { content: "\"\""; color: #888; }
+.array:empty::before { content: "\2205"; color: #888; }
+.object:empty::before { content: "\2205"; color: #888; }
+
+
+/* Miscellaneous */
+
+.regexp {
+    color: darkblue;
+}
+.regexp::before { content: "R\""; color: blue; }
+.regexp::after { content: "\""; color: blue; }
+
+.unknown {
+    font-weight: bold;
+    color: darkorange;
+}
+
+/* References */
+
+.reference {
+    display: inline-block;
+    font-weight: bold;
+    color: magenta;
+}
+.tagged-node {
+    display: inline-block;
+}
+.tagged-node > * {
+    vertical-align: middle;
+}
+.reference::before {
+    content: "#";
+}
+.tagged-node > .reference::after {
+    content: "=";
+    margin-right: 3px;
+}
+
+
+/* Fanciness */
+
+.hl1 {
+    font-weight: bold;
+    color: #00f;
+}
+
+.hl2 {
+    font-weight: bold;
+    color: #080;
+}
+
+.hl3 {
+    font-weight: bold;
+    color: #a80;
+}
+
+.hlE {
+    font-weight: bold;
+    color: #f00;
+}
+
+.red {color: red;}
+.green {color: green;}
+.blue {color: blue;}
+.yellow {color: yellow;}
+.cyan {color: cyan;}
+.magenta {color: magenta;}
+.black {color: black;}
+.white {color: white;}
+.grey {color: grey;}
+
+
+/* Errors */
+
+.error > * {
+    display: inline-block;
+}
+
+
+.error_type {
+    color: #f00;
+    font-weight: bold;
+    margin-right: 10px;
+}
+.error_type:after {
+    content: ":";
+}
+
+
+
+.traceback {
+    display: block;
+    white-space: pre;
+}
+
+.source, .source * {
+    display: inline;
+    white-space: pre;
+}
+
+.sourcepos {
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+.lineno {
+    border-right: 2px solid #88f;
+    padding-right: 2px;
+    margin-right: 10px;
+    display: inline-block;
+    text-align: right;
+    min-width: 2em;
+}
+
+
+.location > *:first-child > * {
+    margin-right: 8px;
+}
+
+.location, .source {
+    display: block;
+}
+
+.location > .lineno, .location > .sourcecode {
+    display: inline;
+}
+
+
+
+
+
+/* AST */
+
+.ast {
+    font-family: 'Cousine', monospace;
+    white-space: pre-wrap;
+}
+
+.ast.symbol, .ast.value, .ast.void {
+    margin: 3px;
+}
+
+.ast.value > .str {
+    color: #f88;
+}
+.ast.value > .str::before {
+    content: "\"";
+}
+.ast.value > .str::after {
+    content: "\"";
+}
+.ast.void::before {
+    content: "\2205";
+    color: #888;
+}
+
+.ast.send > :nth-child(2) > .ast.send, .ast.oper > * > .ast.send {
+    display: inline-block;
+    /* border: 1px solid #eee; */
+    border-bottom: 3px solid darkred;
+    margin: 2px;
+}
+
+.ast.send > * > .ast.oper, .ast.oper > * > .ast.oper {
+    display: inline-block;
+    /* border: 1px solid #eee; */
+    border-bottom: 3px solid black;
+    margin: 2px;
+}
+
+.ast.oper > :nth-child(2) {
+    font-weight: bold;
+    color: #00f;
+}
+
+.ast.send > *, .ast.oper > * {
+    vertical-align: middle;
+}
+
+
+.ast.data {
+    display: inline-block;
+    border-radius: 5px;
+    padding: 2px;
+    margin: 2px;
+    background-color: #88f;
+}
+.ast.data > * {
+    display: inline-block;
+}
+
+.ast.multi {
+    display: inline-block;
+    border-radius: 5px;
+    padding: 2px;
+    margin: 2px;
+    background-color: #4a4;
+}
+.ast.multi > * {
+    display: block;
+}
+
+.ast.data > *, .ast.multi > * {
+    padding: 0px;
+    background-color: #fff;
+    margin: 5px;
+    border-radius: 5px;
+}
+
+
