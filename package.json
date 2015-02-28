@@ -1,0 +1,24 @@
+{
+  "name": "eg-repl",
+  "version": "0.0.0",
+  "description": "REPL for Earl Grey",
+  "dependencies": {
+    "earlgrey": ">= 0.0.1",
+    "earlgrey-runtime": ">= 0.0.3",
+    "jquery": "^2.1.3",
+    "quaint": ">= 0.0.2",
+    "repple": ">= 0.0.1"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/breuleux/eg-repl"
+  },
+  "keywords": [
+    "REPL"
+  ],
+  "author": "Olivier Breuleux",
+  "license": "MIT"
+}
