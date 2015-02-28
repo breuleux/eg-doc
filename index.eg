@@ -160,35 +160,12 @@ getcode{engine, node} =
             line.slice{nindent}
 
 
-q = quaint.create{}
-q.registerAll with {
-
-   "x ---> y"{engine, node, {=> x, => y}} =
-      var doc = null
-      var code = null
-      engine.getStatements{y} each
-         #seq{match directive, #oper{"="}, contents} ->
-            #text{.doc} ->
-               doc = engine.run{engine.shedIndent{contents}}
-            #text{.code} ->
-               code = getcode{engine, contents}
-            else ->
-               throw E.syntax.unknown_directive{directive}
-         else ->
-            throw E.syntax.unknown_format{engine.getText{y}}
-      genfor %
-         document = "cools"
-         {name = engine.getText{x}
-          doc = doc
-          code = code}
-
-}
-
 ri{a, match = null} =
    null? ->
       Math.floor{Math.random{} * a}
    b ->
       Math.floor{a + Math.random{} * [b - a]}
+
 
 shuffle{a} =
    n = a.length
@@ -196,6 +173,7 @@ shuffle{a} =
       j = ri{i, n}
       {a[i], a[j]} = {a[j], a[i]}
    a
+
 
 cools = {
    cools = {=}
@@ -214,7 +192,8 @@ cools = {
          this.cools[name]
 }
 
-async! populateCools{} =
+
+async! populateCools{q} =
 
    async! populate{filename} =
       print filename
@@ -230,7 +209,62 @@ async! populateCools{} =
 
 async! setup{} =
 
-   populateCools{}
+   clickable{code, text = null} =
+      .clickable %
+         onclick{e and {shiftKey => match}} =
+            do: e.preventDefault{}
+            true? ->
+               repl.cm.setValue{code}
+               repl.cm.focus{}
+            else ->
+               repl.process_all{code, true, true}
+               repl.cm.focus{}
+         text or repl.highlight{code}
+
+   make_row{items} =
+      span %
+         enumerate{items} each {match, item} ->
+            0 ->
+               item
+            else ->
+               span % [span.separator % "", item]
+
+   q = quaint.create{}
+   q.registerAll with {
+
+      "maybe label / code"{engine, node, {label => match, => code}} =
+         #text{""} ->
+            match engine.collapse{"/", code}:
+               {x} -> clickable{getcode{engine, x}}
+               {*xs} -> make_row with
+                  xs each x -> clickable{getcode{engine, x}, null}
+         label ->
+            clickable with
+               getcode{engine, code}
+               engine.run{label}
+
+      "x ---> y"{engine, node, {=> x, => y}} =
+         var doc = null
+         var code = null
+         engine.getStatements{y} each
+            #seq{match directive, #oper{"="}, contents} ->
+               #text{.doc} ->
+                  doc = engine.run{engine.shedIndent{contents}}
+               #text{.code} ->
+                  code = getcode{engine, contents}
+               else ->
+                  throw E.syntax.unknown_directive{directive}
+            else ->
+               throw E.syntax.unknown_format{engine.getText{y}}
+         genfor %
+            document = "cools"
+            {name = engine.getText{x}
+             doc = doc
+             code = code}
+
+   }
+
+   populateCools{q}
 
    repl = egrepl with {
       box = document.getElementById{"box"}
@@ -247,21 +281,29 @@ async! setup{} =
 
    repl.eval with S[
 
-      macro cool{x}:
-         name = match x:
-            #void{} ->
-               `null`
-            #value{name} or #symbol{name} ->
-               #value{name}
-            else ->
-               x
-         ```
-         thecool = cools.get{^name}
-         print thecool.doc
-         $repl.process{thecool.code}
+      __showCool{name, history = true} =
+         thecool = cools.get{name}
+         if not thecool:
+            throw E.nocool{'No entry found for {code % name}'}
+         if thecool.doc:
+            print [div.card % thecool.doc]
+         if thecool.code:
+            $repl.process{thecool.code, history}
          undefined
-         ```
+
+      macro cool{x}:
+         `__showCool{^name}` where
+            name = match x:
+               #void{} ->
+                  `null`
+               #value{name} or #symbol{name} ->
+                  #value{name}
+               else ->
+                  x
    ]
+
+   repl.cm.focus{}
+   repl
 
 
    ;; cards = Cards{repl} with Nav{document.getElementById{"help"}}
@@ -347,9 +389,6 @@ async! setup{} =
    ;; q = parseQuery{window.location.search.substring{1}}
    ;; if q.eval:
    ;;    repl.process{q.eval}
-
-   repl.cm.focus{}
-   repl
 
 
 
