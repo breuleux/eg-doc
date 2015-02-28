@@ -2,6 +2,8 @@
 @import url("http://fonts.googleapis.com/css?family=Cousine:400,700|Open+Sans");
 @import url("earlmode.css");
 @import url("datarepr.css");
+@import url("datarepr-colors.css");
+@import url("datarepr-ast.css");
 
 html {
     margin: 0px;
