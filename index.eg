@@ -190,6 +190,11 @@ cools = {
          this.coolOrder.shift{}
       else ->
          this.cools[name]
+   "::repr"{repr} =
+      self = this
+      repr with
+         object with items{self.cools} each {name, {=> descr}} ->
+            {code % name, span % descr}
 }
 
 
@@ -211,14 +216,15 @@ async! setup{} =
 
    clickable{code, text = null} =
       .clickable %
-         onclick{e and {shiftKey => match}} =
-            do: e.preventDefault{}
-            true? ->
-               repl.cm.setValue{code}
-               repl.cm.focus{}
-            else ->
-               repl.process_all{code, true, true}
-               repl.cm.focus{}
+         async! onclick{e and {=> shiftKey}} =
+            match shiftKey:
+               do: e.preventDefault{}
+               true? ->
+                  repl.cm.setValue{code}
+                  repl.cm.focus{}
+               else ->
+                  await repl.process_all{code, true, true}
+                  repl.cm.focus{}
          text or repl.highlight{code}
 
    make_row{items} =
@@ -229,7 +235,14 @@ async! setup{} =
             else ->
                span % [span.separator % "", item]
 
-   q = quaint.create{}
+   q = quaint.create with {
+      store =
+         {=}
+      eval{x} =
+         this.store[x.text{}]
+      setenv{x, value} =
+         this.store[x] = value
+   }
    q.registerAll with {
 
       "maybe label / code"{engine, node, {label => match, => code}} =
@@ -243,24 +256,26 @@ async! setup{} =
                getcode{engine, code}
                engine.run{label}
 
-      "x ---> y"{engine, node, {=> x, => y}} =
-         var doc = null
-         var code = null
-         engine.getStatements{y} each
-            #seq{match directive, #oper{"="}, contents} ->
-               #text{.doc} ->
-                  doc = engine.run{engine.shedIndent{contents}}
-               #text{.code} ->
-                  code = getcode{engine, contents}
+      "tag ---> descr ---> contents"{engine, node, match} =
+         {=> tag, => descr, => contents} ->
+            var doc = null
+            var code = null
+            engine.getStatements{contents} each
+               #seq{match directive, #oper{"="}, contents} ->
+                  #text{.doc} ->
+                     doc = engine.run{engine.shedIndent{contents}}
+                  #text{.code} ->
+                     code = getcode{engine, contents}
+                  else ->
+                     throw E.syntax.unknown_directive{directive}
                else ->
-                  throw E.syntax.unknown_directive{directive}
-            else ->
-               throw E.syntax.unknown_format{engine.getText{y}}
-         genfor %
-            document = "cools"
-            {name = engine.getText{x}
-             doc = doc
-             code = code}
+                  throw E.syntax.unknown_format{engine.getText{contents}}
+            genfor %
+               document = "cools"
+               {name = engine.getText{tag}
+                descr = engine.run{descr}
+                doc = doc
+                code = code}
 
    }
 
@@ -277,6 +292,7 @@ async! setup{} =
       cools = cools
       q = q
       $repl = repl
+      $$clickable = clickable
    }
 
    repl.eval with S[
@@ -286,9 +302,16 @@ async! setup{} =
          if not thecool:
             throw E.nocool{'No entry found for {code % name}'}
          if thecool.doc:
-            print [div.card % thecool.doc]
-         if thecool.code:
-            $repl.process{thecool.code, history}
+            print [
+               div.card %
+                  h2 % thecool.descr
+                  div % thecool.doc
+                  p % '{b%"Click"} on the code below to execute it (Shift-Click to paste)'
+                  .coolcode %
+                     $$clickable{thecool.code}
+            ]
+         ;; if thecool.code:
+         ;;    $repl.process{thecool.code, history}
          undefined
 
       macro cool{x}:

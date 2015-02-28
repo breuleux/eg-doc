@@ -16,3 +16,13 @@
     padding-right: 5px;
 }
 
+.coolcode {
+    display: block;
+    margin: 5px auto 5px auto;
+}
+
+.coolcode > .clickable {
+    display: block;
+    margin: 5px auto 5px auto;
+}
+
