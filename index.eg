@@ -32,7 +32,12 @@ parseQuery{q} =
 egrepl{elements} =
 
    globvar = "$eg$global"
-   gene = eg.Generator{true, globvar}
+   gene = eg.Generator with {
+      interactive = true
+      globvar = globvar
+      es5 = true
+      noboil = true
+   }
    _ev = eg.evaluator with {
       globvar = globvar
       global = global
@@ -41,12 +46,11 @@ egrepl{elements} =
       cwd = "<repl>"
    }
 
-   evopts = {es5 = true, noboil = true}
    ev{text} =
-      let code = gene.generate{eg.Source{text, "<repl>"}, evopts}
+      let code = gene.generate{eg.Source{text, "<repl>"}}
       _ev{code}
    evi{text} =
-      let code = gene.generateInteractive{eg.Source{text, "<repl>"}, evopts}
+      let code = gene.generateInteractive{eg.Source{text, "<repl>"}}
       _ev{code}
 
    repl = Repl with {
