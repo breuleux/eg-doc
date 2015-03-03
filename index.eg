@@ -5,7 +5,7 @@ require:
       topscope
    repple ->
       Repl, DOM
-   quaint
+   quaint -> tools
    jquery
 
 provide:
@@ -150,7 +150,7 @@ fget{url} =
 
 
 getcode{engine, node} =
-   code = engine.getText{engine.shed{node}}
+   code = tools.raw{tools.shed{node}}
    lines = code.split{"\n"}
    while [R"^ *$"? lines[0]]:
       lines.shift{}
@@ -252,7 +252,7 @@ async! setup{} =
 
       "maybe label / code"{engine, {label => match, => code}} =
          #text{""} ->
-            match engine.collapse{"/", code}:
+            match tools.collapse{"/", code}:
                {x} -> clickable{getcode{engine, x}}
                {*xs} -> make_row with
                   xs each x -> clickable{getcode{engine, x}, null}
@@ -265,19 +265,19 @@ async! setup{} =
          {=> tag, => descr, => contents} ->
             var doc = null
             var code = null
-            engine.getStatements{contents} each
+            tools.statements{contents} each
                #seq{match directive, #oper{"="}, contents} ->
                   #text{.doc} ->
-                     doc = engine.run{engine.shedIndent{contents}, {=}}
+                     doc = engine.run{tools.shedIndent{contents}, {=}}
                   #text{.code} ->
                      code = getcode{engine, contents}
                   else ->
                      throw E.syntax.unknown_directive{directive}
                else ->
-                  throw E.syntax.unknown_format{engine.getText{contents}}
+                  throw E.syntax.unknown_format{tools.raw{contents}}
             genfor %
                document = "cools"
-               {name = engine.getText{tag}
+               {name = tools.raw{tag}
                 descr = engine.run{descr, {=}}
                 doc = doc
                 code = code}
