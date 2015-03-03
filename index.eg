@@ -182,7 +182,7 @@ shuffle{a} =
 cools = {
    cools = {=}
    coolOrder = {}
-   add{cool} =
+   register{path, cool} =
       this.cools[cool.name] = cool
    shuffle{} =
       this.coolOrder = shuffle{xs} where
@@ -207,8 +207,9 @@ async! populateCools{q} =
    async! populate{filename} =
       print filename
       contents = await fget{S'doc/{filename}'}      
-      result = q.run{contents}
-      quaint.processDocuments{result, {cools = cools}}
+      ;; result = q.run{contents}
+      ;; quaint.processDocuments{result, {cools = cools}}
+      q.run{contents, {cools = cools}}
 
    filenames = [await fget{"doc/manifest"}].split{"\n"}
    print filenames
@@ -249,7 +250,7 @@ async! setup{} =
    }
    q.registerAll with {
 
-      "maybe label / code"{engine, node, {label => match, => code}} =
+      "maybe label / code"{engine, {label => match, => code}} =
          #text{""} ->
             match engine.collapse{"/", code}:
                {x} -> clickable{getcode{engine, x}}
@@ -258,16 +259,16 @@ async! setup{} =
          label ->
             clickable with
                getcode{engine, code}
-               engine.run{label}
+               engine.gen{label}
 
-      "tag ---> descr ---> contents"{engine, node, match} =
+      "tag ---> descr ---> contents"{engine, match} =
          {=> tag, => descr, => contents} ->
             var doc = null
             var code = null
             engine.getStatements{contents} each
                #seq{match directive, #oper{"="}, contents} ->
                   #text{.doc} ->
-                     doc = engine.run{engine.shedIndent{contents}}
+                     doc = engine.run{engine.shedIndent{contents}, {=}}
                   #text{.code} ->
                      code = getcode{engine, contents}
                   else ->
@@ -277,7 +278,7 @@ async! setup{} =
             genfor %
                document = "cools"
                {name = engine.getText{tag}
-                descr = engine.run{descr}
+                descr = engine.run{descr, {=}}
                 doc = doc
                 code = code}
 

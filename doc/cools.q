@@ -11,15 +11,15 @@ arith ---> Redefining arithmetic --->
 markdown ---> Markdown --->
   doc =
 
-    _1 <- `http://daringfireball.net/projects/markdown/syntax
-
     Let's display some Markdown::{_1}~! It is really quite simple,
     first import the `markdown package, generate the HTML with `parse,
     and use `[raw % html] to render it.
 
+    _1 <- http://daringfireball.net/projects/markdown/syntax
+
   code =
     require: markdown -> parse
-    raw % parse{"Isn't this **cool**?"}
+    raw % parse("Isn't this **cool**?")
 
 multiplication ---> A multiplication table --->
   doc =
@@ -36,11 +36,11 @@ multiplication ---> A multiplication table --->
 flot ---> Plotting with flot --->
   doc =
 
-    _1 <- `http://www.flotcharts.org/
-
     This code will draw a nice plot using flot::{_1}.
     `require will not work here, unfortunately, but
     we can still load the scripts.
+
+    _1 <- http://www.flotcharts.org/
 
   code =
 
@@ -48,10 +48,10 @@ flot ---> Plotting with flot --->
     load "http://www.flotcharts.org/flot/jquery.flot.js"
     globals: $
     $out.elem.style.height = "500px" ;; making room
-    $.plot{$out.elem, {p1, p2, p3}} where
-       p1 = 1..100 each i -> {i, Math.sin{i / 10}}
-       p2 = 1..100 each i -> {i, Math.sin{i / 10 - 1}}
-       p3 = 1..100 each i -> {i, Math.sin{i / 10} + 0.25}
+    $.plot($out.elem, {p1, p2, p3}) where
+       p1 = 1..100 each i -> {i, Math.sin(i / 10)}
+       p2 = 1..100 each i -> {i, Math.sin(i / 10 - 1)}
+       p3 = 1..100 each i -> {i, Math.sin(i / 10) + 0.25}
     undefined
 
 
