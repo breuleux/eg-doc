@@ -55,7 +55,7 @@ egrepl{elements} =
 
    repl = Repl with {
       elements = elements
-      async! eval{text} =
+      async eval{text} =
          try:
             res = await evi{text}
             #success{res}
@@ -202,9 +202,9 @@ cools = {
 }
 
 
-async! populateCools{q} =
+async populateCools{q} =
 
-   async! populate{filename} =
+   async populate{filename} =
       print filename
       contents = await fget{S'doc/{filename}'}      
       ;; result = q.run{contents}
@@ -217,11 +217,11 @@ async! populateCools{q} =
    filenames each filename when filename -> populate{filename}
 
 
-async! setup{} =
+async setup{} =
 
    clickable{code, text = null} =
       .clickable %
-         async! onclick{e and {=> shiftKey}} =
+         async onclick{e and {=> shiftKey}} =
             match shiftKey:
                do: e.preventDefault{}
                true? ->
