@@ -231,7 +231,7 @@ class ReplPlugin:
                else ->
                   await @repl.process_all{code, true, true}
                   @repl.cm.focus{}
-         text or @repl.highlight{code}
+         text or @repl.highlight{code, true}
 
    make-row{items} =
       span %
@@ -323,20 +323,20 @@ async setup{} =
          out.log{contents}
          undefined
 
-      __show-cool{out, name, history = true} =
+      async __show-cool{out, name, history = true} =
          thecool = cools.get{name}
          if not thecool:
             throw E.nocool{'No entry found for {code % name}'}
-         if thecool.doc:
-            fade-in{out} with
-               div.card.cool %
-                  h2 % thecool.descr
-                  div % thecool.doc
-                  p % '{b%"Click"} on the code below to execute it (Shift-Click to paste)'
-                  .coolcode %
-                     $$clickable{thecool.code}
-         ;; if thecool.code:
-         ;;    $repl.process{thecool.code, history}
+         ;; if thecool.doc:
+         ;;    fade-in{out} with
+         ;;       div.card.cool %
+         ;;          h2 % thecool.descr
+         ;;          div % thecool.doc
+         ;;          p % '{b%"Click"} on the code below to execute it (Shift-Click to paste)'
+         ;;          .coolcode %
+         ;;             $$clickable{thecool.code}
+         if thecool.code:
+            await $repl.process{thecool.code, history}
          undefined
 
       __show-tut{out, name, history = true} =
