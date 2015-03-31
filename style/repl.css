@@ -257,6 +257,7 @@ body {
 }
 
 /* .card */ .note, /* .card */ .tip, .warning, .success {
+    display: block;
     margin-top: 10px;
     margin-bottom: 10px;
     padding: 10px;
@@ -377,6 +378,11 @@ body {
 
 .collapsed > * {
     display: none !important;
+}
+
+
+.blocks > * {
+    display: block;
 }
 
 

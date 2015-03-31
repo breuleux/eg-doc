@@ -70,7 +70,7 @@ egrepl{elements} =
 
    repl.eval with S[
       globals:
-         window, document, JSON
+         window, document, alert
 
       wait = promisify with {d, f} -> setTimeout.call{null, f, d}
 
@@ -140,19 +140,19 @@ fget{url} =
 
 
 getcode{engine, node} =
-   code = tools.raw{tools.shed{node}}
+   code = tools.rawRelative{tools.shed{node}}
    lines = code.split{"\n"}
    while [R"^ *$"? lines[0]]:
       lines.shift{}
    while [R"^ *$"? lines[lines.length - 1]]:
       lines.pop{}
-   R"( *)(.*)"! {_, indent, line0} = lines[0]
-   nindent = indent.length
-   xs.join{"\n"} where
-      xs = {line0} ++
-         lines.slice{1} each line ->
-            line.slice{nindent}
-
+   ;; R"( *)(.*)"! {_, indent, line0} = lines[0]
+   ;; nindent = indent.length
+   ;; xs.join{"\n"} where
+   ;;    xs = {line0} ++
+   ;;       lines.slice{1} each line ->
+   ;;          line.slice{nindent}
+   tools.dedent{lines.join{"\n"}}
 
 ri{a, match = null} =
    null? ->
@@ -346,7 +346,9 @@ async setup{} =
          if thetut.doc:
             fade-in{out} with
                div.card.tut %
-                  h2 % thetut.descr
+                  if{String{thetut.descr}.starts-with{"..."}
+                     ""
+                     h2 % thetut.descr}
                   div % thetut.doc
          undefined
 
