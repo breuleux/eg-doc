@@ -11,11 +11,11 @@ arith ---> Redefining arithmetic --->
 markdown ---> Markdown --->
   doc =
 
-    Let's display some Markdown::{_1}~! It is really quite simple,
+    Let's display some Markdown@@{L1}~! It is really quite simple,
     first import the `markdown package, generate the HTML with `parse,
     and use `[raw % html] to render it.
 
-    _1 <- http://daringfireball.net/projects/markdown/syntax
+    L1 => http://daringfireball.net/projects/markdown/syntax
 
   code =
     require: markdown -> parse
@@ -36,11 +36,11 @@ multiplication ---> A multiplication table --->
 flot ---> Plotting with flot --->
   doc =
 
-    This code will draw a nice plot using flot::{_1}.
+    This code will draw a nice plot using flot@@{L1}.
     `require will not work here, unfortunately, but
     we can still load the scripts.
 
-    _1 <- http://www.flotcharts.org/
+    L1 => http://www.flotcharts.org/
 
   code =
 
@@ -54,9 +54,3 @@ flot ---> Plotting with flot --->
        p3 = 1..100 each i -> {i, Math.sin(i / 10) + 0.25}
     undefined
 
-
-wait ---> WAIT --->
-  doc =
-     WAIT
-  code =
-     await wait{2000}
