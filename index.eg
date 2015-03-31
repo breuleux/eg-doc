@@ -19,18 +19,6 @@ globals:
    decodeURIComponent
 
 
-;; parseQuery{q} =
-;;    decode{s} = decodeURIComponent{s.replace{"+", " "}}
-;;    rval = {=}
-;;    search = R.g"([^&=]+)=?([^&]*)"
-;;    var m = search.exec{q}
-;;    while m:
-;;       {_, k, v} = m
-;;       rval[decode{k}] = decode{v}
-;;       m = search.exec{q}
-;;    rval
-
-
 egrepl{elements} =
 
    globvar = "$eg$global"
@@ -181,50 +169,56 @@ shuffle{a} =
    a
 
 
-class Cools:
+class Cards:
 
-   constructor{} =
-      @cools = {=}
-      @cool-order = {}
+   constructor{@order} =
+      @cards = {=}
+      @cards-stripped = {=}
+      @card-order = {}
 
-   register{path, cool} =
-      @cools[cool.name] = cool
+   register{path, card} =
+      @cards[card.name] = card
+      @cards-stripped[card.name.replace{R"^([0-9]+)-", ""}] = card
 
    shuffle{} =
-      @cool-order = shuffle{xs} where
-         xs = items{@cools} each {k, v} -> v
+      @card-order = shuffle{xs} where
+         xs = items{@cards} each {k, v} -> v
+
+   sort{} =
+      ord = items{@cards}.sort with
+         {{R"^([0-9]+)-"! {_, Number! n1}, _}
+          {R"^([0-9]+)-"! {_, Number! n2}, _}} ->
+            n1 - n2
+      @card-order = ord each {k, v} -> v
 
    .get{match name = null} =
       null? ->
-         if @coolOrder == {}:
-            @shuffle{}
-         @coolOrder.shift{}
+         if @card-order == {}:
+            self[@order]{}
+         @card-order.shift{}
       else ->
-         @cools[name]
+         @cards-stripped[name]
 
    "::repr"{repr} =
       repr with
-         object with items{@cools} each {name, {=> descr}} ->
+         object with items{@cards} each {name, {=> descr}} ->
             {code % name, span % descr}
 
 
-async populate-cools{plugin} =
+async populate-cards{plugin, manifest} =
    async populate{filename} =
-      print filename
       contents = await fget{'doc/{filename}'}
       q = create{plugin}
       q.run{contents}
-
-   filenames = [await fget{"doc/manifest"}].split{"\n"}
-   print filenames
-
-   filenames each filename when filename -> populate{filename}
+   filenames = [await fget{'doc/{manifest}'}].split{"\n"}
+   await all
+      filenames each filename when filename -> populate{filename}
 
 
 class ReplPlugin:
 
-   constructor{@repl} =
-      @cools = Cools{}
+   constructor{@repl, order} =
+      @cards = Cards{order}
 
    clickable{code, text = null} =
       .clickable %
@@ -248,12 +242,9 @@ class ReplPlugin:
                span % [span.separator % "", item]
 
    install-to{eng} =
-      print .quack
-      print [@]
-      print @cools
 
       eng.register-document with {
-         cools = @cools
+         cards = @cards
       }
 
       eng.register-rule with {
@@ -276,15 +267,20 @@ class ReplPlugin:
                tools.statements{contents} each
                   Seq? {match directive, Oper? {"="}, contents} ->
                      Text? {.doc} ->
-                        doc = engine.translate{tools.shedIndent{contents}, .enode}
+                        doc = engine.translate{tools.shedIndent{contents}, .enode} with
+                           {paragraph = true}
                      Text? {.code} ->
                         code = getcode{engine, contents}
                      else ->
                         throw E.syntax.unknown_directive{directive}
                   else ->
-                     throw E.syntax.unknown_format{tools.raw{contents}}
+                     pass
+               if not doc and not code:
+                  doc =
+                     engine.translate{tools.shedIndent{contents}, .enode} with
+                        {paragraph = true}
                genfor %
-                  document = "cools"
+                  document = "cards"
                   {name = tools.raw{tag}
                    descr = engine.translate{descr, .enode}
                    doc = doc
@@ -303,38 +299,72 @@ async setup{} =
       textarea = document.getElementById{"code"}
    }
 
-   plugin = ReplPlugin{repl}
-   ;; q = quaint.create{plugin}
-   populate-cools{plugin}
+   cool-plugin = ReplPlugin{repl, .shuffle}
+   tut-plugin = ReplPlugin{repl, .sort}
+
+   await populate-cards{cool-plugin, "cools.txt"}
+   await populate-cards{tut-plugin, "tut.txt"}
 
    repl.setenv with {
-      cools = plugin.cools
+      cools = cool-plugin.cards
+      tuts = tut-plugin.cards
       q = create{}
       $repl = repl
-      $$clickable = plugin.clickable.bind{plugin}
+      $$clickable = cool-plugin.clickable.bind{cool-plugin}
    }
 
-   repl.eval with S[
+   await repl.eval with S[
 
-      __showCool{name, history = true} =
+      fade-in{out, contents} =
+         out.elem.style.transition = "opacity 500ms";
+         out.elem.style.opacity = 0
+         window.getComputedStyle{out.elem}.opacity
+         out.elem.style.opacity = 1
+         out.log{contents}
+         undefined
+
+      __show-cool{out, name, history = true} =
          thecool = cools.get{name}
          if not thecool:
             throw E.nocool{'No entry found for {code % name}'}
          if thecool.doc:
-            print [
-               div.card %
+            fade-in{out} with
+               div.card.cool %
                   h2 % thecool.descr
                   div % thecool.doc
                   p % '{b%"Click"} on the code below to execute it (Shift-Click to paste)'
                   .coolcode %
                      $$clickable{thecool.code}
-            ]
          ;; if thecool.code:
          ;;    $repl.process{thecool.code, history}
          undefined
 
+      __show-tut{out, name, history = true} =
+         thetut = tuts.get{name}
+         if not thetut:
+            throw E.notut{'No entry found for {code % name}'}
+         if thetut.doc:
+            fade-in{out} with
+               div.card.tut %
+                  h2 % thetut.descr
+                  div % thetut.doc
+         undefined
+
       inline-macro cool{x}:
-         `__showCool{^name}` where
+         `__show-cool{$out, ^name}` where
+            name = match x:
+               #void{} ->
+                  `null`
+               #value{name} or #symbol{name} ->
+                  #value{name}
+               else ->
+                  x
+
+      inline-macro next{#void{}}:
+         `__show-tut{$out, null}`
+
+      inline-macro tut{x}:
+         `__show-tut{$out, ^name}` where
             name = match x:
                #void{} ->
                   `null`
@@ -343,6 +373,8 @@ async setup{} =
                else ->
                   x
    ]
+
+   await repl.process{"next", false}
 
    repl.cm.focus{}
    repl

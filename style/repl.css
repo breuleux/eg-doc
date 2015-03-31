@@ -175,19 +175,6 @@ body {
     background-color: white;
 }
 
-/* .card */ h2 {
-    margin-top: 0px;
-    margin-bottom: 0.5em;
-    border-bottom: 2px solid #88f;
-    color: white;
-    background-color: #66a;
-    padding: 10px;
-}
-
-/* .card */ h2 code {
-    background-color: #66a;
-}
-
 /* .card */ h3 {
     margin-top: 0.5em;
     margin-bottom: 0px;

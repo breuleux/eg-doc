@@ -26,3 +26,38 @@
     margin: 5px auto 5px auto;
 }
 
+
+.tut h2 {
+    background-color: #66a;
+}
+
+.cool h2 {
+    background-color: #a6a;
+}
+
+h2 {
+    margin-top: 0px;
+    margin-bottom: 0.5em;
+    color: white;
+    padding: 10px;
+}
+
+h2 code {
+    background-color: #66a;
+}
+
+.big {
+    display: block;
+    font-size: 14pt;
+    margin-left: 30px;
+}
+
+.big:before {
+    content: "\2192";
+}
+
+.card {
+    transition: width 2s, height 2s, transform 2s;
+}
+
+
