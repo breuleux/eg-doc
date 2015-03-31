@@ -19,16 +19,16 @@ globals:
    decodeURIComponent
 
 
-parseQuery{q} =
-   decode{s} = decodeURIComponent{s.replace{"+", " "}}
-   rval = {=}
-   search = R.g"([^&=]+)=?([^&]*)"
-   var m = search.exec{q}
-   while m:
-      {_, k, v} = m
-      rval[decode{k}] = decode{v}
-      m = search.exec{q}
-   rval
+;; parseQuery{q} =
+;;    decode{s} = decodeURIComponent{s.replace{"+", " "}}
+;;    rval = {=}
+;;    search = R.g"([^&=]+)=?([^&]*)"
+;;    var m = search.exec{q}
+;;    while m:
+;;       {_, k, v} = m
+;;       rval[decode{k}] = decode{v}
+;;       m = search.exec{q}
+;;    rval
 
 
 egrepl{elements} =
@@ -208,21 +208,6 @@ class Cools:
             {code % name, span % descr}
 
 
-;; async populateCools{q} =
-
-;;    async populate{filename} =
-;;       print filename
-;;       contents = await fget{S'doc/{filename}'}      
-;;       ;; result = q.run{contents}
-;;       ;; quaint.processDocuments{result, {cools = cools}}
-;;       q.run{contents, {cools = cools}}
-
-;;    filenames = [await fget{"doc/manifest"}].split{"\n"}
-;;    print filenames
-
-;;    filenames each filename when filename -> populate{filename}
-
-
 async populate-cools{plugin} =
    async populate{filename} =
       print filename
@@ -311,18 +296,6 @@ class ReplPlugin:
 
 async setup{} =
 
-   ;; q = quaint.create with {
-   ;;    store =
-   ;;       {=}
-   ;;    eval{x} =
-   ;;       this.store[x.text{}]
-   ;;    setenv{x, value} =
-   ;;       this.store[x] = value
-   ;; }
-   ;; q.registerAll with {
-
-   ;; }
-
    repl = egrepl with {
       box = document.getElementById{"box"}
       target = document.getElementById{"interactive"}
@@ -373,149 +346,3 @@ async setup{} =
 
    repl.cm.focus{}
    repl
-
-
-   ;; cards = Cards{repl} with Nav{document.getElementById{"help"}}
-   ;; __raw_cards each {topic, desc, contents} ->
-   ;;    cards.register{topic, desc, contents}
-   ;; cards.make_index{}
-
-   ;; engine = quaint.Engine{quaint.dispatch}
-
-   ;; repl.setenv{{...}} with
-   ;;    __qengine = engine
-   ;;    __cards = cards.cards
-   ;;    __repl = repl
-   ;;    repl = repl
-   ;;    DOM = DOM
-   ;;    $libs = {=}
-   ;;    jQuery = jquery
-   ;;    $ = jquery
-
-   ;; repl.eval with S[
-
-   ;;    globals:
-   ;;       alert, document, window
-
-   ;;    _next{} =
-   ;;       "There is no tutorial yet."
-
-   ;;    _help{match topic} =
-   ;;       when __cards[topic] ->
-   ;;          __cards[topic][1]{0}
-   ;;       else ->
-   ;;          "Invalid help topic: \"" + topic + "\""
-
-   ;;    macro next{_}:
-   ;;       `_next{}`
-
-   ;;    macro help{match}:
-   ;;       #void{} -> `_help{"help"}`
-   ;;       topic -> `_help{^topic}`
-
-   ;;    macro Q{arg}:
-   ;;       `__qengine.run{^arg}`
-
-   ;;    loader{url, fn} =
-   ;;       script = DOM with script %
-   ;;          async = true
-   ;;          src = url
-   ;;          type = "text/javascript"
-   ;;          onload = fn
-   ;;       document.head.appendChild{script}
-   ;;       undefined
-
-   ;;    macro load{`^url as ^v`}:
-   ;;       ```
-   ;;          splice:
-   ;;             globals: ^v
-   ;;             [
-   ;;                url = ^url
-   ;;                if $libs[url]:
-   ;;                   then:
-   ;;                      $out.log with .note %
-   ;;                         "\"" + url + "\" is already loaded."
-   ;;                   else:
-   ;;                      $libs[url] = true
-   ;;                      __repl.lock{}
-   ;;                      timer = setTimeout{f, 5000} where f{} =
-   ;;                         $out.log with .warning %
-   ;;                            "Loading \"" + url + "\" is taking more than five seconds."
-   ;;                            "A green box will appear here once if/when it is loaded."
-   ;;                         __repl.unlock{}
-   ;;                         $libs[url] = false
-   ;;                      loader{url} with {} ->
-   ;;                         $out.log with .success %
-   ;;                            "Loaded \"" + url + "\"!"
-   ;;                         __repl.unlock{}
-   ;;                         clearTimeout{timer}
-   ;;             ]
-   ;;       ```
-   ;; ]
-
-   ;; repl.process{"help", false}
-
-   ;; q = parseQuery{window.location.search.substring{1}}
-   ;; if q.eval:
-   ;;    repl.process{q.eval}
-
-
-
-
-
-
-
-
-;; macro acquire_cards{#data{*filenames}}:
-
-;;    print .hello
-;;    console.log{___node.require}
-
-;;    require:
-;;       fs, quaint
-
-;;    print .there
-
-;;    globals: __dirname
-
-;;    dirname = __dirname
-
-;;    results = #data{}
-;;    dispatch = quaint.dispatch.clone{}
-;;    components = {...} with
-
-;;       "topic --> contents"{engine, node, {=> topic, => contents}} =
-;;          results.push with #data with
-;;             #value{topic.location.text{}}
-;;             #value{""}
-;;             #value{contents.location.text{}}
-
-;;       "topic --> desc --> contents"{engine, node, {=> topic, => desc, => contents}} =
-;;          results.push with #data with
-;;             #value{topic.location.text{}}
-;;             #value{desc.location.text{}}
-;;             #value{contents.location.text{}}
-
-;;    items{components} each {spec, fn} ->
-;;       dispatch.register with quaint.Spec{spec, fn}
-
-;;    Q = quaint.Engine{dispatch}
-
-;;    filenames each #value{filename} ->
-;;       f = dirname + "/" + filename
-;;       contents = fs.readFileSync{f, .utf8}
-;;       Q.run{contents}
-
-;;    ;; quaint mucks this up for some reason
-;;    set __dirname = dirname
-
-;;    results
-
-
-;; __raw_cards =
-;;    acquire_cards with
-;;       "basic.q"
-;;       "examples.q"
-;;       "advanced.q"
-
-
