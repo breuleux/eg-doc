@@ -260,7 +260,7 @@ class ReplPlugin:
                   getcode{engine, code}
                   engine.gen{label}
 
-         "\\tag ---> \\descr ---> \\contents"{engine, match} =
+         "[\\tag = \\descr] ---> \\contents"{engine, match} =
             {=> tag, => descr, => contents} ->
                var doc = null
                var code = null
