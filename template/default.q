@@ -12,9 +12,9 @@ repo => https://github.com/breuleux/earl-grey
 
 div#nav %
   * div#logo.navlink % {logo} @@@
-  * div.navlink #doc % Doc @@@ doc.html
-  * div.navlink #repl % Try it! @@@ repl
-  * div.navlink #source % Source @@ {repo}
+  * div.navlink #doc % doc @@@ doc.html
+  * div.navlink #repl % try it! @@@ repl
+  * div.navlink #source % source @@ {repo}
 
 div#body %
   div#main %
