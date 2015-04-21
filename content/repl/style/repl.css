@@ -6,28 +6,11 @@
 @import url("datarepr-ast.css");
 @import url("cards.css");
 
-html {
-    margin: 0px;
-    padding: 0px;
-    height: 98%;
-    overflow: hidden;
-}
 
-#box, body {
-    height: 100%;
-    max-width: 800px;
-    font-size: 12pt;
-    margin-left: auto;
-    margin-right: auto;
+#box {
+    margin-top: 30px;
+    margin-bottom: 30px;
 }
-
-#box, #help {
-    height: 100%;
-    overflow-y: auto;
-}
-
-#box {width: 100%; float: right}
-#help {width: 0%; float: left}
 
 .result {
     /* outline: 0px; */

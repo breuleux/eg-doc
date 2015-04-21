@@ -45,6 +45,7 @@ egrepl{elements} =
 
    repl = Repl with {
       elements = elements
+      sink = elements.sink
       async eval{text} =
          try:
             res = await evi{text}
@@ -297,6 +298,9 @@ async setup{} =
       target = document.getElementById{"interactive"}
       inputline = document.getElementById{"inputline"}
       textarea = document.getElementById{"code"}
+      sink{} =
+         set-timeout{f, 0} where f{} =
+            window.scroll-to{0, document.body.scroll-height}
    }
 
    cool-plugin = ReplPlugin{repl, .shuffle}
