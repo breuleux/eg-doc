@@ -1,0 +1,244 @@
+
+require:
+   "earlgrey/5" as eg
+   "earlgrey/lib5/util" -> GenSym
+   "earlgrey/lib5/expand" ->
+      Scope, topscope
+   quaint ->
+      create as _create, QAst
+   earl-gulp ->
+      transformer
+   gulp
+   gulp-sass
+   path
+   fs
+   del as _del
+   gulp-sourcemaps
+   gulp-uglify
+   vinyl-source-stream
+   vinyl-buffer
+   globby
+   end-of-stream
+
+
+require-macros:
+   earl-gulp -> task
+
+
+gensym = GenSym{"$eg$"}
+
+glob = promisify{globby}
+eos = promisify{end-of-stream}
+del = promisify{_del}
+
+
+paths = {
+   templates = "./template/**/*.q"
+   content = {
+      "./content/**/*.q"
+      "!./content/repl/doc/**/*.q"
+   }
+   fragments = "./fragments/**/*.json"
+   sass = "./content/**/*.sass"
+   eg = "./content/**/*.eg"
+   assets = {
+      "png", "svg", "css", "json", "txt", "qdat"
+   } each ext -> './content/**/*.{ext}'
+}
+
+
+class EGEvaluator:
+   constructor{@glob, @gene, @ev, @scope} =
+      pass
+   eval{text, env = {=}, loc = null} =
+      if env == {=}:
+         let code = @gene.generate{eg.Source{text, "<repl>"}, {scope = @scope}}
+         @ev{code.code}
+      else:
+         f = @fork{}
+         items{env} each {k, v} ->
+            f.setenv{k, v}
+         f.eval{text, {=}, loc}
+   setenv{key, value} =
+      mangled = gensym{key}
+      @gene.env.bind{@scope, key, #variable{mangled}}
+      @glob[mangled] = value
+   fork{} =
+      EGEvaluator{@glob, @gene, @ev, Scope{@scope}}
+
+create{} =
+   globvar = gensym{.global}
+   let glob = global ;;Object.create{global}
+   gene = eg.Generator with {
+      interactive = true
+      globvar = globvar
+      es5 = true
+      noboil = true
+   }
+   ev = eg.evaluator with {
+      globvar = globvar
+      global = glob
+      filename = "<repl>"
+      showname = "<repl>"
+      cwd = "<repl>"
+   }
+
+   _create with {@} ->
+      env = @evaluator.store
+      @evaluator = EGEvaluator{glob, gene, ev, topscope}
+      @setenv with {
+         siteroot = "/"
+      }
+      items{env} each {k, v} -> @evaluator.setenv{k, v}
+
+
+
+compile{q, text} =
+   res = q.translate{text, .html}
+   metadata = object with q.documents.meta.entries{} each {k, v} ->
+      newv =
+         match v:
+            QAst? ->
+               match create{}.translate{v, .enode}:
+                  [top %]? {children => match} ->
+                     {x} -> x
+                     xs -> xs
+                  other -> other
+            else -> v
+      {k, newv}
+   metadata.contents = raw % res
+   metadata
+
+transformer! compile-quaint{file, enc} =
+   p = file.path
+   relp = getBase{file} + ".q"
+   print 'Compile: {p}'
+   q = create{}
+   file.path = p.replace{R".q$", ".json"}
+   metadata = compile{q, file.contents.to-string{}}
+   metadata.path = relp
+   file.contents = new Buffer{JSON.stringify{metadata}}
+   file
+
+templatize{match data, p} =
+   {template => "none"} ->
+      data.contents
+   else ->
+      String! tplname = data.template or .default
+      tpl = templates[tplname]
+      if not tpl:
+         throw E.no_template{'could not find template "{tplname}" to compile {p}'}
+      q = create{}
+      items{data} each {k, v} ->
+         q.documents.meta.set{k, v}
+      q.documents.meta.set{.template, .none}
+      q.documents.fragments = fragments
+      q.setenv{.body, top % data.contents}
+      metadata = compile{q, tpl}
+      templatize{metadata, p}
+
+transformer! fill-template{file, enc} =
+   p = file.path
+   data = fragments[get-base{file}]
+   res = templatize{data, p}.children[0]
+   print 'Templatize: {p}'
+   file.path = p.replace{R".json$", ".html"}
+   file.contents = new Buffer{res}
+   file
+
+
+get-base{file} =
+   file.path.slice{file.base.length}.replace{R".[^.]+$", ""}
+
+transformer! strip-to-base{file, enc} =
+   {get-base{file}
+    file.contents.toString{}}
+
+templates = {=}
+transformer! memo-template{{p, contents}, enc} =
+   templates[p] = contents
+   null
+
+fragments = {=}
+transformer! memo-fragment{{p, contents}, enc} =
+   fragments[p] = object with
+      items{JSON.parse{contents}} each {k, v} ->
+         {k, ENode.fromObject{v}}
+   null
+
+
+task clean:
+   del{{"./fragments", "./output"}}
+
+
+task template:
+   chain gulp:
+      @src{paths.templates}
+      @pipe{strip-to-base{}}
+      @pipe{memo-template{}}
+
+
+task fragments:
+   chain gulp:
+      @src{paths.content}
+      @pipe{compile-quaint{}}
+      @pipe{gulp.dest{"./fragments"}}
+
+task readFragments < fragments:
+   chain gulp:
+      @src{paths.fragments}
+      @pipe{strip-to-base{}}
+      @pipe{memo-fragment{}}
+
+
+task finalize < {template, readFragments}:
+   chain gulp:
+      @src{paths.fragments}
+      @pipe{fill-template{}}
+      @pipe{gulp.dest{"./output"}}
+
+
+task sass:
+   chain gulp:
+      @src{paths.sass}
+      @pipe{gulp-sass{indented-syntax = true}}
+      @pipe{gulp.dest{"./output"}}
+
+
+task scripts:
+   require: earlify, browserify
+   files = await glob{paths.eg}
+   await all files each file ->
+      b = browserify with {
+         entries = {file}
+         transform = {earlify}
+      }
+      b.require{file, {expose = path.basename{file}[...-3]}}
+      target = chain file:
+         @replace{R".eg$", ".js"}
+         @replace{R"^./content/", ""}
+      chain b.bundle{}:
+         @pipe{vinyl-source-stream{target}}
+         @pipe{vinyl-buffer{}}
+         @pipe{gulp.dest{"output"}}
+         eos{@}
+
+
+task assets:
+   chain gulp:
+      @src{paths.assets}
+      @pipe{gulp.dest{"./output"}}
+
+
+
+task watch:
+   gulp.watch{paths.sass, {.sass}}
+   gulp.watch{paths.content, {.finalize}}
+   gulp.watch{paths.templates, {.finalize}}
+   gulp.watch{paths.eg, {.scripts}}
+   gulp.watch{paths.assets, {.assets}}
+
+task make < {finalize, sass, scripts, assets}
+
+task default < make
+
