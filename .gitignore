@@ -4,4 +4,5 @@ lib
 node_modules
 junk
 egcache
-out
+fragments
+output
