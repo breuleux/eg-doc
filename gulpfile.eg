@@ -6,6 +6,7 @@ require:
       Scope, topscope
    quaint ->
       create as _create, QAst
+      tools
    earl-gulp ->
       transformer
    gulp
@@ -19,6 +20,8 @@ require:
    vinyl-buffer
    globby
    end-of-stream
+   "highlight.js" as hljs
+   "./hl"
 
 
 require-macros:
@@ -88,6 +91,15 @@ create{} =
       @evaluator = EGEvaluator{glob, gene, ev, topscope}
       @setenv with {
          siteroot = "/"
+      }
+      @register-rule with {
+         "\\maybe\\lang & \\body"{engine, {=> lang, => body}} =
+            code = tools.dedent{tools.raw-relative{body}.replace{R"^ *\n", ""}}
+            langstr = match lang.raw{}:
+               "" -> "earlgrey"
+               x -> x
+            hl = {}
+            pre.hl[raw] % hljs.highlight{langstr, code}.value
       }
       items{env} each {k, v} -> @evaluator.setenv{k, v}
 
