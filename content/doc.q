@@ -24,7 +24,7 @@ toc::below
 Comments must be prefixed with two semicolons and go until the end of
 the line.
 
-&*   ;; This is a comment.
+&   ;; This is a comment.
 
 
 == Blocks
@@ -409,9 +409,9 @@ functions. Note that the default value will be recomputed every time
 it is needed (or not at all, if it is unneeded). For example:
 
 &   f(x = [print "missing"; 0]) = x
-    f(55)     ==> returns 55
-    f()       ==> prints "missing", and returns 0
-    f()       ==> prints "missing" *again*, and returns 0
+    f(55)     ;; ==> returns 55
+    f()       ;; ==> prints "missing", and returns 0
+    f()       ;; ==> prints "missing" *again*, and returns 0
 
 (remember that `[stmt1; stmt2] executes both statements in sequence
 and returns `stmt2. It's not an array).
@@ -757,8 +757,9 @@ converted into something else, for instance HTML:
 
     node.toHTML{}
 
-    ===>
+Would produce:
 
+html &
     <div id="main">
       Some text
       <strong>1234</strong>
