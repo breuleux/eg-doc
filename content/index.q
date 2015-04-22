@@ -10,6 +10,7 @@ meta ::
 js :: document.getElementById("logo").className = "navlink curnav"
 
 [\label _@@ \url] => __[{label} @@ {url}]
+[@@! \project] => {project} @@ https://github.com/breuleux/{project}
 [\maybe\text @@@ \maybe\path] => {text}@@{siteroot}{path}
 
 __[Earl Grey] is a neat little language that compiles to
@@ -71,10 +72,7 @@ frameworks such as React. Conversely, EG can be used to create
 packages that JavaScript code may import and use.
 
 EG has support for source maps. Plugins exist for a few existing
-frameworks: [gulp-earl]@@{L1} for gulp, earlify@@{L2} for browserify.
-
-L1 => https://github.com/breuleux/gulp-earl
-L2 => https://github.com/breuleux/earlify
+frameworks: @@!gulp-earl for gulp, @@!earlify for browserify.
 
 
 == async/await
@@ -88,9 +86,11 @@ Here's an example to give you an idea:
 
 &   require: request
     g = promisify(request.get)
+
     async getXKCD(n = 0) =
        response = await g('http://xkcd.com/info.{n}.json')
        JSON.parse(response.body)
+
     async:
        requests = await all 1..10 each i -> getXKCD(i)
        requests each req -> print req.alt
@@ -130,6 +130,57 @@ More exhaustive documentation can be found
 
 
 == Macro system
+
+EG's macro system permits the definition of new control structures
+that look native to the language. Macros are fairly easy to write and
+can make code terser and more readable.
+
+You don't have to look very far for useful examples, as many existing
+JavaScript or node libraries can be enhanced by macros!
+
+
+=== earl-mocha
+
+@@!earl-mocha defines a certain amount of macros to help you write
+tests for your applications:
+
+&  require-macros:
+      earl-mocha -> (describe, it, assert, expect-error)
+
+   describe "Array":
+
+      it "#concat":
+         assert {1, 2}.concat({3, 4}) == {1, 2, 3, 4}
+
+      it "#map":
+         assert {1, 2, 3}.map(x -> x * x) == {1, 4, 9}
+         expect-error TypeError:
+            {1, 2, 3}.map("huh")
+
+
+=== earl-gulp
+
+Using @@!earl-gulp, you can define gulp tasks like this:
+
+&   require-macros: earl-gulp -> task
+
+    require: gulp, gulp-sass, gulp-earl, gulp-sourcemaps
+
+    task sass:
+       chain gulp:
+          @src("./content/**/*.sass")
+          @pipe(gulp-sass(indented-syntax = true))
+          @pipe(gulp.dest("./output"))
+
+    task earl:
+       chain gulp:
+          @src("./content/**/*.eg")
+          @pipe(gulp-sourcemaps.init())
+          @pipe(gulp-earl())
+          @pipe(gulp-sourcemaps.write("./"))
+          @pipe(gulp.dest("./output"))
+
+    task default < {earl, sass}
 
 
 
