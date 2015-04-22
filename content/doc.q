@@ -35,8 +35,10 @@ square `[[]] brackets:
 &   hello
        superb
        world
-    <=>
-    hello[superb; world]
+
+is equivalent to:
+
+&   hello[superb; world]
 
 It is recommended to use indent to denote blocks, so you will not use
 square brackets much in practice. Just be aware that the expression
@@ -51,11 +53,13 @@ lines with `[\ ]:
 &   a
     \ + b
     \ + c
-    <=>
-    a + b + c
+
+is equivalent to:
+
+&   a + b + c
 
 Be aware that indent isn't going to work for this: replacing the
-backslashes with indent will yield `a[+ b, + c].
+backslashes with indent will yield `a[+ b; + c].
 
 
 == Variables
@@ -64,6 +68,10 @@ Variables can be declared as mutable or immutable
 
 &   var x = 123        ;; mutable variable
     let x = "hello"    ;; const variable (immutable)
+
+Hyphens are allowed inside variable names. This is valid:
+
+&   var my-variable = 1234
 
 Scoping is lexical: variables declared in a block are only valid in
 that block.
@@ -699,17 +707,18 @@ block.
        react as React
        something(1234)
        "./mymodule" ->
-          someFunction, otherFunction as blah
+          some-function, other-function as blah
 
 This is roughly equivalent to the following JavaScript:
 
-&   fs = require("fs");
-    path = require("path");
-    React = require("react");
-    something = require("something")(1234);
-    _temp = require("./mymodule");
-    someFunction = _temp.someFunction;
-    blah = _temp.otherFunction;
+javascript &
+    var fs           = require("fs")
+      , path         = require("path")
+      , React        = require("react")
+      , something    = require("something")(1234)
+      , _temp        = require("./mymodule")
+      , someFunction = _temp.someFunction
+      , blah         = _temp.otherFunction;
 
 === `provide
 
