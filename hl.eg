@@ -28,9 +28,9 @@ regexp_lowprio2 = '(with|where|each)(?![a-zA-Z$_0-9-])'
 
 hljs.register-language{.earlgrey} with {hljs} -> {
 
-   lexemes = regexp_id
+   ;; lexemes = regexp_id
 
-   keywords = "return match else break continue"
+   ;; keywords = "return match else break continue"
 
    contains = {
 
@@ -129,13 +129,18 @@ hljs.register-language{.earlgrey} with {hljs} -> {
       {
          class-name = .keyword
          begin = '{regexp_id} +(?!({regexp_simpleop}|{regexp_wordop_raw})( +|$|\n)|,|;| )'
-         end = '{regexp_id}|'
+         end = '{regexp_id}:|'
          exclude-end = true
       }
 
       {
          class-name = .operator
          begin = regexp_op
+      }
+
+      {
+         class-name = .keyword
+         begin = '(return|match|else|break|continue)(?![a-zA-Z$_0-9-])'
       }
 
       {
@@ -154,7 +159,14 @@ hljs.register-language{.earlgrey} with {hljs} -> {
 }
 
 ;; hl = hljs.highlight{.earlgrey, ___} with """
-;; func(arg1) with arg2    ;; with-notation
+
+;; require:
+;;    fs, path
+;;    react as React
+;;    something(1234)
+;;    "./mymodule" ->
+;;       some-function, other-function as blah
+
 ;; """
 ;; print hl.value
 
