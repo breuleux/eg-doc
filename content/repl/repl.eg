@@ -67,6 +67,7 @@ egrepl{elements} =
       $currenti = -1
       System = System
       DOM = DOM
+      dir = require: /dir
    }
 
    repl.eval with S[
