@@ -160,7 +160,7 @@
              ctx.fill-style = map[x][y]
              ctx.fill()
        set-timeout(-> canvas.focus(), 10)
-       print "GLUB! Use arrow keys. Eat blue. Avoid black. (My high score is 62)"
+       print "GLUB! Use arrow keys. Eat blue. Avoid black. (My high score is 77)"
        print canvas
     game(15, 30, 150)
     undefined
