@@ -37,10 +37,7 @@ del = promisify{_del}
 
 paths = {
    templates = "./template/**/*.q"
-   content = {
-      "./content/**/*.q"
-      "!./content/repl/doc/**/*.q"
-   }
+   content = "./content/**/*.q"
    fragments = "./fragments/**/*.json"
    sass = "./content/**/*.sass"
    eg = {"./content/**/*.eg", "!./content/repl/repl.eg"}
@@ -255,7 +252,7 @@ task repl:
       chain b.bundle{}:
          @pipe{vinyl-source-stream{target}}
          @pipe{vinyl-buffer{}}
-         @pipe{gulp-uglify{}}
+         ;; @pipe{gulp-uglify{}}
          @pipe{gulp.dest{"output"}}
          eos{@}
 
