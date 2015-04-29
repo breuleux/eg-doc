@@ -4,7 +4,7 @@
 @import url("hl-xcode.css")
 
 $main-width: 950px
-$nav-height: 100px
+$nav-height: 80px
 $nav-border: 5px
 $nav-font: 'Mate SC', sans-serif
 
@@ -24,12 +24,43 @@ body
   width: $main-width
   margin: auto
 
+
 #main-container
   background-color: white
 
 #main
   padding-top: 10px
   padding-bottom: 10px
+
+
+#twocol-container
+  background-color: white
+
+#twocol
+  width: 100%
+  display: flex
+  flex-direction: row
+  align-items: flex-start
+
+  #toc
+    width: 400px
+    padding-left: 30px
+    padding-right: 30px
+
+  #main
+    width: $main-width
+
+@media screen and (max-width: 1000px)
+  #twocol
+    display: block
+    #toc
+      width: 100%
+      box-sizing: border-box
+    #main
+      width: 100%
+      box-sizing: border-box
+      padding-left: 30px
+      padding-right: 30px
 
 
 #nav-container, #foot-container
@@ -53,7 +84,7 @@ body
     line-height: $nav-height
     vertical-align: middle
     border-bottom: $nav-border solid transparent
-    font-size: 22pt
+    font-size: 20pt
     text-align: center
 
   .navlink:hover

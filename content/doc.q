@@ -4,17 +4,12 @@ meta ::
    author = Olivier Breuleux
    summary =
       Documentation of the Earl Grey language.
-   template = default
+   template = twocol
 
-
-js :: document.getElementById("doc").className = "navlink curnav"
-
-
-= Table of contents
-
-
-toc::below
-
+div#toc %
+  js :: document.getElementById("doc").className = "navlink curnav"
+  toc::below
+div#main % [
 
 = Basic syntax
 
@@ -845,3 +840,5 @@ Here is a simple macro for __assert:
 
     assert 1 == 2
     ;; => throws E.assert("Assertion failed: 1 == 2")
+
+]
