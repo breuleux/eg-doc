@@ -43,18 +43,29 @@ body
   align-items: flex-start
 
   #toc
+    box-sizing: border-box
     width: 400px
     padding-left: 30px
     padding-right: 30px
+    padding-top: 50px
 
   #main
     width: $main-width
+
+@media screen and (min-width: 1750px)
+  #toc
+    flex-grow: 1
+  #tail
+    flex-grow: 1
+    box-sizing: border-box
+    width: 400px
 
 @media screen and (max-width: 1000px)
   #twocol
     display: block
     #toc
       width: 100%
+      padding-top: 10px
       box-sizing: border-box
   #twocol #main, #main
     width: 100%

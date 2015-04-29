@@ -4,13 +4,15 @@ meta ::
    author = Olivier Breuleux
    summary =
       Install and use
-   template = default
+   template = twocol
 
 [\label _@@ \url] => __[{label} @@ {url}]
 
-js :: document.getElementById("use").className = "navlink curnav"
 
-toc :: below
+div#toc %
+  js :: document.getElementById("use").className = "navlink curnav"
+  toc::below
+div#main % [
 
 = Install
 
@@ -245,3 +247,4 @@ regular expressions, for example:
 * See the [documentation _@@ {siteroot}doc.html] for an overview of
   all of EG's features.
 
+]
