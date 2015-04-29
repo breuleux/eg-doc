@@ -10,7 +10,7 @@ meta ::
 js :: document.getElementById("logo").className = "navlink curnav"
 
 [\label _@@ \url] => __[{label} @@ {url}]
-[@@! \project] => {project} @@ https://github.com/breuleux/{project}
+[@@! \project] => {project} _@@ https://github.com/breuleux/{project}
 [\maybe\text @@@ \maybe\path] => {text}@@{siteroot}{path}
 
 __[Earl Grey] is a neat little language that compiles to
@@ -88,7 +88,7 @@ Here's an example to give you an idea:
     g = promisify(request.get)
 
     async getXKCD(n = 0) =
-       response = await g('http://xkcd.com/info.{n}.json')
+       response = await g('http://xkcd.com/{n}/info.0.json')
        JSON.parse(response.body)
 
     async:
