@@ -3,6 +3,11 @@
 @import url(http://fonts.googleapis.com/css?family=Open+Sans)
 @import url("hl-xcode.css")
 
+$main-width: 950px
+$nav-height: 100px
+$nav-border: 5px
+$nav-font: 'Mate SC', sans-serif
+
 body
   width: 100%
   margin: auto
@@ -12,79 +17,63 @@ body
   font-size: 14pt
   background-color: #eee
 
+.container
+  width: 100%
 
-#body
-  background-color: #fff
+.container > *
+  width: $main-width
+  margin: auto
 
+#main-container
+  background-color: white
 
 #main
-  width: 900px
-  margin: auto
   padding-top: 10px
   padding-bottom: 10px
 
 
-strong
-  color: #000
-
-
-#nav, #foot
-  background-color: #eee
-  height: 102px
-
-  ul
-    width: 1000px
-    margin: auto
-    padding: 0
-    list-style: none
+#nav-container, #foot-container
+  height: $nav-height
 
 #nav
+  display: flex
+  flex-direction: row
+  justify-content: flex-start
+  align-items: center
+  height: $nav-height
+  font-family: $nav-font
 
-  /* font-family: sans-serif
-  font-family: 'Mate SC', sans-serif;
-
-  li
-    font-size: 22pt
-    display: inline-block
-    line-height: 100px
+  img
     vertical-align: middle
-
-  #logo
-    /* position: relative
-    /* top: -1px
-    display: inline-block
-    vertical-align: middle
-
-  #logo img
-    display: inline-block
-    vertical-align: middle
-
-  #logo
-    /* padding-right: 30px
-    display: inline-block
 
   .navlink
+    box-sizing: border-box
     position: relative
-    top: -2px
-    display: inline-block
-    background-color: #eee
-    border-bottom: 4px solid transparent
+    height: $nav-height
+    line-height: $nav-height
+    vertical-align: middle
+    border-bottom: $nav-border solid transparent
+    font-size: 22pt
+    text-align: center
 
   .navlink:hover
-    /* background-color: #ddd
-    border-bottom: 4px solid black
+    border-bottom: $nav-border solid black
 
-  .navlink
-    position: relative
+  .navlink a
+    padding-left: 30px
+    padding-right: 30px
+    display: inline-block
+    font-weight: bold
+    text-decoration: none
+    color: black
 
   .curnav.navlink
     background-color: #ddd
-    border-bottom: 4px solid transparent
+    border-bottom: $nav-border solid transparent
 
   .curnav:after
-    /* z-index: -1
     position: absolute
-    top: 100px
+    top: $nav-height
     left: 50%
     margin-left: -40px
     content: ''
@@ -96,18 +85,7 @@ strong
     border-right: solid 40px transparent
 
   .curnav.navlink:hover
-    border-bottom: 4px solid transparent
-    /* background-color: #ddd
-
-  /* .curnav:hover:after
-  /*   border-top: solid 25px #ddd
-
-  .navlink a
-    padding-left: 30px
-    padding-right: 30px
-    display: inline-block
-    font-weight: bold
-    color: black
+    border-bottom: $nav-border solid transparent
 
   .navlink a:focus
     outline: none
@@ -115,6 +93,9 @@ strong
   .navlink a:hover
     text-decoration: none
 
+
+#foot
+  padding: 15px 0 15px 0
 
 
 /* HEADERS */
@@ -130,14 +111,6 @@ h1.title
 h1, h2, h3, h4, h5, h6
   font-family: 'Mate SC'
   color: black
-
-
-/* h1, h2, h3, h4, h5, h6
-/*   font-family: 'Oswald', 'Trebuchet MS'
-/*   font-weight: normal
-/*   margin-left: -20px
-/*   margin-right: -20px
-/*   padding-left: 10px
 
 h1
   font-size: 2.3em
@@ -159,14 +132,6 @@ h5
 h6
   font-size: 1.1em
 
-/* LINKS */
-a
-  text-decoration: none
-  color: #7646b3
-
-a:hover
-  text-decoration: underline
-  color: #7646b3
 
 /* CODE */
 
@@ -209,4 +174,19 @@ table th, table td
   border-right: 1px solid black
 
 
+/* LINKS */
+
+a
+  text-decoration: none
+  color: #7646b3
+
+a:hover
+  text-decoration: underline
+  color: #7646b3
+
+
+/* MISC */
+
+strong
+  color: #000
 
