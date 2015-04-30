@@ -653,21 +653,21 @@ The above can be rewritten:
 
 === Assignment wrappers
 
-The keywords `get, `return, `yield and `await may be used in a
+The keywords `expr-value, `return, `yield and `await may be used in a
 pattern on the left hand side of an assignment. Normally, an
 assignment returns the variable it declares, or if there is more than
 one variable, an array of the declared variables:
 
-&   x = 4                       ;; ==> 4
-    {x, {y, z}} = {1, {2, 3}}   ;; ==> {1, 2, 3}
-    {x, _, y}   = {1, 2, 3}     ;; ==> {1, 2}
-    {x, String! y} = {1, 2}     ;; ==> {1, "2"}
+&   x = 4                           ;; ==> 4
+    {x, {y, z}} = {1, {2, 3}}       ;; ==> {1, 2, 3}
+    {x, _, y}   = {1, 2, 3}         ;; ==> {1, 2}
+    {x, String! y} = {1, 2}         ;; ==> {1, "2"}
 
 You can, however, modify this behavior:
 
-&   {x, get, z} = {1, 2, 3}     ;; ==> 2
-    {_, return, _} = {1, 2, 3}  ;; immediately returns 2 from the function
-    {yield, yield} = {1, 2}     ;; yields 1, then yields 2
+&   {x, expr-value, z} = {1, 2, 3}  ;; ==> 2
+    {_, return, _} = {1, 2, 3}      ;; immediately returns 2 from the function
+    {yield, yield} = {1, 2}         ;; yields 1, then yields 2
 
 Note that it's not particularly useful to declare variables alongside
 `return since there's no way to use them after the function returns.
@@ -755,6 +755,155 @@ Here's how it works:
   `await, the error will be ignored. The `[async:] block mitigates
   this issue by wrapping the async call, catching the error, and
   logging it.
+
+
+= Classes
+
+The `class keyword can be used to declare a new class.
+
+Each method has a reference to the object in the variable `self and as
+the `[@] operator. Here's a simple class to get you started:
+
+=== Defining
+
+&  class Person:
+      constructor(name, age) =
+         @name = name
+         @age = age
+      advance-inexorably-towards-death(n > 0 = 1) =
+         @age += n
+      say-name() =
+         'Hello! My name is {@name}!'
+
+Instead of setting values in the constructor manually as the above
+you can also use the following shortcut:
+
+&  class Person:
+      constructor(@name, @age) =
+         ;; pass is a placeholder keyword; like in Python it just means "do nothing"
+         pass
+
+This works for all methods, not just the constructor.
+
+
+=== Instantiating
+
+Instantiating a class can be done with the `new keyword, or not. It
+doesn't matter.
+
+&  alice = new Person("alice", 25)
+   bob = Person("bob", 44)
+   bob.advance-inexorably-towards-death()
+
+.note %
+  The `new keyword may be needed to instantiate some classes in third
+  party packages, check their documentation to be sure.
+
+
+=== Subclassing
+
+The `[<] operator is used to define the superclass of a new class.
+
+&  class Baker < Person:
+      bake(n) =
+         '{@name} is baking {n} cake{if{n > 1, "s", ""}}!'
+
+   carmen = Baker("carmen", 30)
+   carmen.bake(1)
+   carmen.advance-inexorably-towards-death()
+   carmen.bake(20)
+
+There is no `super keyword at the moment. I'll fix that at some point.
+
+
+=== Static methods
+
+Define static methods for a class using a `[static:] block:
+
+&  class Person:
+      static:
+         make-twins(name1, name2, age) =
+            {Person(name1, age), Person(name2, age)}
+      constructor(@name, @age) =
+         pass
+      ...
+
+
+=== Special methods
+
+There are a few interesting special methods you can define on a class
+to customize its behavior:
+
+* `Symbol.iterator is used by `each and `for..of to iterate over your
+  object. You must return a generator (use `gen and `yield, see
+  below).
+
+* `Symbol.check is consulted by the `[?] operator.
+
+* `Symbol.project is consulted by the `[!] operator.
+
+* `Symbol.contains is consulted by the `[in] operator.
+
+Under ES6 semantics, these methods are not strings, but special
+symbols. You will therefore need the unquote operator `[^] to set
+them, but it's easy enough:
+
+
+&  class Multiples:
+      constructor(@n) =
+         pass
+
+      ;; Iterate through all multiples of @n using a generator
+      gen (^Symbol.iterator)() =
+         ;; This is an infinite iterator. Be careful.
+         0.. each i ->
+            yield i * @n
+
+      ;; Check that a number is a multiple of @n
+      (^Symbol.check)(n) =
+         Number? n and n mod @n == 0
+
+      ;; Round down n to a multiple of @n
+      (^Symbol.project)(n) =
+         n - (n mod @n)
+
+      ;; We'll define this the same as Symbol.check
+      (^Symbol.contains)(n) = (@)? n
+
+   mul3 = Multiples(3)
+
+   ;; print all multiples of 3 no greater than 100
+   mul3 each
+      > 100 -> break
+      n -> print n
+
+   ;; this will fail because 25 is not a multiple of 3
+   mul3? x = 25
+
+   ;; this will set y to 24
+   mul3! y = 25
+
+   ;; the following is true
+   3 in mul3
+
+.note %
+  Don't forget the parentheses around `(^Symbol.iterator) and friends.
+  Otherwise you will get an error like "symbol/string is not a function".
+  That's normal because `[^] means to set the key corresponding to the
+  value of an expression and without the parentheses it'll think the key
+  is the value of the whole expression `Symbol.iterator() instead of just
+  `Symbol.iterator.
+
+
+=== TODO
+
+There are some missing features I'll add at some point, tell me if you
+need them.
+
+* `super keyword
+* getter/setters
+
+
 
 
 = Miscellaneous
