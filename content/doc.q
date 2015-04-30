@@ -62,7 +62,7 @@ backslashes with indent will yield `a[+ b; + c].
 Variables can be declared as mutable or immutable
 
 &   var x = 123        ;; mutable variable
-    let x = "hello"    ;; const variable (immutable)
+    let y = "hello"    ;; const variable (immutable)
 
 Hyphens are allowed inside variable names. This is valid:
 
@@ -78,9 +78,9 @@ If you simply write:
 Then what happens depends on whether a variable called `x already
 exists in scope.
 
-* It exists and is mutable: the variable is modified.
-* It exists and is immutable: compile time error.
-* It does not exist: it is declared in the current block as _immutable.
+* It __exists and is __mutable: the variable is modified.
+* It __exists and is __immutable: compile time error.
+* It __[does not exist]: it is declared in the current block as _immutable.
 
 This means that most of the time you can declare variables without the
 `let keyword, assuming they don't already exist. You only need `let
@@ -116,14 +116,37 @@ Global variables need to be declared to be accessible:
 
 === Strings
 
+Use double quotes:
+
 &   "this is a string"
     "Escape \" with a backslash"
     'single-quoted strings support interpolation'
-    'there are {n} little piggies' where n = 3
     """this is a
        "long"
        multiline string"""
-    .this_is_also_a_string
+
+The prefix dot operator creates strings as well, but only if the
+string represents a valid variable name:
+
+&   .hello == "hello"
+
+If there are dashes in a dot-string, it is converted to camelCase:
+
+&   .hello-world == "helloWorld"
+
+This means that if you write a method call with dashes, for instance
+`document.get-element-by-id("some-id"), it will compile to
+`document.getElementById("some-id"). You have the choice of either
+notation.
+
+
+=== Interpolated strings
+
+Single quotes are interpolated.
+
+&   n = 3
+    print 'there are {n} little piggies'
+    ;; ==> there are 3 little piggies
 
 === Numbers
 
@@ -207,7 +230,7 @@ call `[+]{a, b}. You can thus redefine almost any operator locally:
     are macros and `() cannot be used to provide macro arguments.
 
 
-== `if and `while
+== if and while
 
 
 __[If statements] are written as they are in Python:
@@ -250,7 +273,6 @@ need to use `while.label, just like this:
 EG defines `for statements that are a cross between JavaScript's
 semantics and Python's syntax, which means that it comes in three
 flavors:
-
 &   for (var i = 0; i < 10; i++):
        print i
 
@@ -259,14 +281,26 @@ flavors:
 
     for element of iterable:
        print element
+They work like you'd expect (with one little gotcha*). I'm telling you
+about them because you are free to use what you see fit, but in my
+opinion, __[`for should not be used]:
+.warning %
+  *Earl Grey parses commas and semicolons as essentially the same, so
+  this will not work:
 
-They work like you'd expect. I'm telling you about them because you
-are free to use what you see fit, but in my opinion, __[`for should
-not be used]:
+  & for (var i = 0, var j = 0; i < 10; i++, j++):
+       print i + j
 
-=== `each
+  EG will think the first comma is a semicolon. Here's a valid
+  alternative:
 
-Instead, EG's __[`each] operator should be used, either as a
+  & for (var {i, j} = {0, 0}; i < 10; (i++; j++)):
+       print i + j
+
+
+=== each
+
+EG's __[`each] operator should be used instead of `for, either as a
 statement:
 
 &   1..10 each i -> print i * i
@@ -311,7 +345,7 @@ You can also use `when to filter data:
 
 When using pattern matching with `each, EG will throw an exception if
 a value does not match any of the patterns _unless the last pattern
-contains a `when` clause. In other words:
+contains a `when clause. In other words:
 
 &   {1, "x", 2, 3} each
        Number? n -> n            ;; ERROR! "x" does not match
@@ -356,7 +390,7 @@ into elements and bind them to variables, and more:
        {"attack", Grue?} ->
           ;; We can special-case commands but they have to come before
           ;; the generic version.
-          this.die_horribly()
+          this.die-horribly()
        {"attack", enemy} ->
           enemy.hp -= this.attack
           this.hp -= enemy.attack
