@@ -773,7 +773,7 @@ the `[@] operator. Here's a simple class to get you started:
       advance-inexorably-towards-death(n > 0 = 1) =
          @age += n
       say-name() =
-         'Hello! My name is {@name}!'
+         print 'Hello! My name is {@name}!'
 
 Instead of setting values in the constructor manually as the above
 you can also use the following shortcut:
@@ -806,7 +806,7 @@ The `[<] operator is used to define the superclass of a new class.
 
 &  class Baker < Person:
       bake(n) =
-         '{@name} is baking {n} cake{if{n > 1, "s", ""}}!'
+         print '{@name} is baking {n} cake{if{n > 1, "s", ""}}!'
 
    carmen = Baker("carmen", 30)
    carmen.bake(1)
@@ -925,6 +925,49 @@ Here's an example:
        ;; @ is {"hell", "is", "freezing"}
        @join(" ")
     ;; ==> "hell is freezing"
+
+
+=== Regular expressions
+
+Regular expressions are written with the `R prefix, for instance,
+`R"\d+(\.\d*)?"
+
+They can be used as checkers or projectors. For example:
+
+&   mangle(match email) =
+
+       ;; regexp! transforms the input into an array of match groups
+       ;; (the first is always the whole match)
+       R"^([a-z.]+)@([a-z.]+)$"! {_, name, host} ->
+          '{name} AT {host}'
+
+       ;; regexp? will just test if the regexp matches, but it won't
+       ;; transform the input
+       R"@"? ->
+          "It looks like an email but I'm too daft to parse it."
+
+       else ->
+          "This is not an email at all!"
+
+
+=== Errors and exceptions
+
+* `throw is used to throw an exception
+* `try and `catch are used to catch an exception
+* `finally is used for cleanup
+* `E is used to build customized exceptions
+
+&  try:
+      throw E.test.my-error("This is my error.")
+   catch TypeError? e:
+      print "There was a type error."
+   catch E.my-error? e:
+      print "My error!"
+   catch e:
+      print "Some other error."
+   finally:
+      print "We are done."
+
 
 
 = Module system
