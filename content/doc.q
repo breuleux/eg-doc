@@ -194,13 +194,11 @@ last evaluated expression is used as the return value.
 
 Operator applications in EG, such as `[a + b], desugar to the function
 call `[+]{a, b}. You can thus redefine almost any operator locally:
-
 &   bizarro(a, b) =
        let x + y = outer{+}{x, y}
        let x - y = outer{-}{x, y}
        a + b - c
     bizarro(10, 20, 10)  ;; ==> 0
-
 .note %
   * `let must be used in order to shadow the existing bindings.
   * `outer returns the previous binding of a variable, which is
@@ -388,6 +386,44 @@ pattern matching can be applied on the transformed value.
     Array! a = 5               ;; a is the array {5}
     Array! {Number! a} = "10"  ;; a is the number 10
 
+__Important: Projectors are applied __[left to right]. This could be a
+bit counter-intuitive sometimes, so let me give you clear examples
+that you can use as reference:
+
+&   add-one! multiply-by-two! x = 10   ;; x is ((10 + 1) * 2) = 22
+    multiply-by-two! add-one! x = 10   ;; x is ((10 * 2) + 1) = 21
+
+Projectors also work on functions, where they are quite useful. For
+example:
+
+&   curry! f(x, y) = x + y
+
+They can also save you some typing if you use them on function
+arguments. If you wanted to implement a `save-all function that works
+on an array of files, but also on a single file, you could write:
+
+&   save-all(Array! files) =
+       files each file -> file.save()
+
+instead of, say:
+
+&   save-all(var files) =
+       if not Array? files:
+          files = {files}
+       files each file -> file.save()
+
+
+=== Inline projectors
+
+The `[>>] operator, in a pattern, transforms the match result. That
+can be useful sometimes, usually in argument lists or nested patterns
+where you can't simply apply the transform on the expression to the
+right of the equal sign.
+
+&   x >> ((x + 1) * 2) = 10    ;; x is 22
+    x >> {x, x} = 6            ;; x is {6, 6}
+    x >> x.trim() = "  xyz "   ;; x is "xyz"
+
 
 === Destructuring
 
@@ -423,7 +459,36 @@ This means that unlike in Python, if you define an empty array `{} as
 a default value, it will always be a fresh array.
 
 
-=== `when conditions
+=== Destructuring objects
+
+The `[=>] operator inside patterns lets you extract object fields.
+
+`[=> xyz] will extract the field named `xyz into the variable `xyz:
+
+&   {=> x, => y} = {x = 1, y = 2}        ;; x is 1, y is 2
+
+`[xyz => abc] will extract the field named `xyz into the variable `abc:
+
+&   {x => a, y => b} = {x = 1, y = 2}    ;; a is 1, b is 2
+
+The right hand side can be a pattern. If there is no left hand side,
+but that the right hand side defines a single variable, then the left
+hand side is set to the name of that sole variable:
+
+&   {x => {a, b}, => {y}} = {x = {1, 2}, y = {3}} ;; a is 1, b is 2, y is 3
+
+You don't have to extract all fields:
+
+&   {=> x} = {x = 1, y = 2}              ;; x is 1, the y field is ignored
+
+The unquote operator `[^] can be used to match a dynamic key if needed:
+
+&   key = "x"
+    {^key => y} = {x = 66}               ;; y is 66
+
+
+
+=== when
 
 The __when operator lets you write arbitrary conditions for a
 clause:
@@ -436,7 +501,7 @@ clause:
        ...
 
 
-=== `or pattern
+=== or
 
 __or will try to match one of a series of patterns
 
@@ -456,7 +521,7 @@ Also, patterns are evaluated in the order they are defined, so the
 most specific should come first.
 
 
-=== `and pattern
+=== and
 
 __and will try to match every pattern (again, in order):
 
@@ -539,8 +604,13 @@ be used in a pattern:
     enhance(match) =
        Number? n -> n * n
        String? s -> s + "s"
-       each x -> enhance(x) ;; short for xs -> xs each x -> enhance(x)
+       (each x) -> enhance(x) ;; short for xs -> xs each x -> enhance(x)
     enhance({1, 2, "cake"}) ;; => {1, 4, "cakes"}
+
+.warning %
+  The parentheses around `(each x) are needed above, otherwise the
+  clause is parsed like `[each (x -> enhance(x))], which is not legal
+  (at least not yet).
 
 `each in this case can be anywhere in a pattern, and multiple `each
 found in the same pattern will nest in the order that they are found:
@@ -551,16 +621,16 @@ found in the same pattern will nest in the order that they are found:
 
 `chain can be embedded and you get a nice pipeline going on:
 
-&   capitalizeWords(chain) =
+&   capitalize-words(chain) =
        @trim()
        @split(R" +") each w when w != "" ->
-          w[0].toUpperCase() + w.slice(1)
+          w[0].to-upper-case() + w.slice(1)
        @join(" ")
-    capitalizeWords(" pulp  fiction ")
+    capitalize-words(" pulp  fiction ")
     ;; => "Pulp Fiction"
 
 
-=== `is operator
+=== is
 
 Sometimes you may need or want to give a value to a variable inside a
 pattern. You can do this with `is:
@@ -685,6 +755,27 @@ Here's how it works:
   `await, the error will be ignored. The `[async:] block mitigates
   this issue by wrapping the async call, catching the error, and
   logging it.
+
+
+= Miscellaneous
+
+=== chain
+
+`chain is how you chain methods in EG.
+
+The body of `chain should contain a sequence of statements. The return
+value of each statement is tied to the `[@] operator in the next.
+
+Here's an example:
+
+&   chain "hello":
+       ;; @ is "hello"
+       @replace("o", "")
+       ;; @ is "hell"
+       {@, "is", "freezing"}
+       ;; @ is {"hell", "is", "freezing"}
+       @join(" ")
+    ;; ==> "hell is freezing"
 
 
 = Module system
@@ -824,7 +915,7 @@ not look like it, but it will match the expression `[a + b] with `[+] in
 
 __unless can be defined as a counterpart to `if:
 
-&   macro unless(`{^cond, ^body}`):
+&   inline-macro unless(`{^cond, ^body}`):
        `if not ^cond: ^body`
 
     unless(1 == 2, print "all is well")  ;; prints "all is well"
@@ -834,8 +925,8 @@ __unless can be defined as a counterpart to `if:
 
 Here is a simple macro for __assert:
 
-&   macro assert(cond):
-       code = @gettext(cond)
+&   inline-macro assert(cond):
+       code = @raw(cond)
        `if{cond, true, throw E.assert("Assertion failed: " + ^code)}`
 
     assert 1 == 2
