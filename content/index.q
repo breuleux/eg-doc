@@ -21,7 +21,7 @@ JavaScript. Here's what it has to offer:
 * Generators and [async/await _@@ #asyncawait] (no callback hell!)
 * Powerful, deeply integrated [pattern matching _@@ #patternmatching]
   * Used for assignment, function declaration, looping, exceptions...
-* A DOM-building DSL with customizable behavior
+* A [document-building DSL _@@ #documentbuilding] with customizable behavior
 * A very powerful hygienic [macro _@@ #macrosystem] system that allows you to define:
   * Your own control structures!
   * New kinds of patterns for the pattern matcher!
@@ -127,6 +127,32 @@ thinking about it):
 
 More exhaustive documentation can be found
 [here @@@ doc.html#patternmatching].
+
+
+== Document building
+
+Earl Grey's `[%] operator can be used to easily build HTML, DOM,
+virtual DOM, and other things:
+
+&  mul-table =
+      div[#multiplication-table] %
+         h1 % "Multiplication table"
+         table % 1..10 each i ->
+            tr % 1..10 each j ->
+               td % i * j
+
+The resulting data structure can then be transformed in various ways.
+For instance, you may use the `[/html] and `[/dom] standard packages.
+
+`html builds a string of HTML that you can print or save in a file:
+
+&  require: /html
+   print html(mul-table)
+
+`dom builds a DOM element that you can append somewhere in your page:
+
+&  require: /dom
+   document.get-element-by-id("target").append-child(dom(mul-table))
 
 
 == Macro system
