@@ -1088,27 +1088,58 @@ html &
     </div>
 
 
-
 = Macros
 
-I am only going to present part of the macro system here. The complete
-system is much more powerful, but I haven't yet figured out the best
-external API.
+There are two means of defining macros in EG:
+
+* `inline-macro defines a macro for use in the current file and the
+  current scope. They cannot be exported from the module at the
+  moment.
+
+* `macro defines an exportable macro. It cannot be used in the file or
+  scope in which it is defined, but it can be imported with
+  `require-macros and used from other modules.
+
+I wouldn't say it's the best setup, but it's still fairly good, and
+the one that exists at the moment.
 
 Macros in EG cannot extend the parser; however, EG's syntax is
 flexible enough that there isn't much of a need to extend it.
 
+First, though, some basics must be laid out:
+
 === Invariants
 
-A lot of EG's syntax is sugar. It is simpler than it looks:
+A lot of EG's syntax is sugar. Here's what you should know:
 
-&   a: b          <=> a{b}
-    a b: c        <=> a{b, c}
-    a b           <=> a[b]
+* __[Parenthesis elimination]: parentheses are sugar for the other two
+  bracket types:
+  bash & a(b)          <=> a{b}
+         a(b, c)       <=> a{b, c}
+         (a)           <=> [a]       <=> a
+         (a, b)        <=> [a, b]
 
-So for instance, the expression `[if x < y: z] actually has the same
-AST as `if{x < y, z}. For that matter, `if[{x < y, z}] is also
-equivalent, and `[return x + y] yields the same AST as `return[x + y].
+* __[Operator rules]: operator applications desugar to function/macro
+  calls. If the operator is prefix or postfix, one of the arguments
+  will be void. Except for commas, colons and `with, _all operators
+  undergo that simplification, including core ones like `[=] or `[->]:
+  bash & a + b         <=> [+]{a, b}
+         + a           <=> [+]{[], a}
+         a +           <=> [+]{a, []}
+
+* __[Colon rules]:
+  bash & a: b          <=> a{b}
+         a b: c        <=> a{b, c}
+
+* __[Juxtaposition rule]:
+  bash & a[b]           <=> a b
+
+So for instance:
+
+& if x < y: z   <=> if{[<]{x, y}, z}
+  return x + y  <=> return[[+]{x, y}]
+  var x = 1234  <=> [=]{var[x], 1234}
+
 
 === quote
 
@@ -1133,13 +1164,37 @@ Together these features let you pattern match on code:
        `^f ^arg` -> "application"
 
 Be careful about the order of patterns. The "application" pattern may
-not look like it, but it will match the expression `[a + b] with `[+] in
-`f and `{a, b} in `arg (because `[a + b] <=> `[[+] {a, b}]).
+not look like it, but it would match the expression `[a + b] with `[+]
+in `f and `{a, b} in `arg (because `[a + b] <=> `[[+] {a, b}]).
 
 
-=== Examples
+=== inline-macro
 
-__unless can be defined as a counterpart to `if:
+The syntax goes like this:
+
+&   inline-macro macro-name(expression):
+       build-new-expression(expression)
+
+The expression is the AST of the argument given to the macro call and
+it is determined like this:
+
++ Situation               + Value of `expression
+| `macro-name(x)          | `[`{x}`]
+| `macro-name{x}          | `[`{x}`]
+| `macro-name(x, y)       | `[`{x, y}`]
+| `macro-name[x]          | `[`x`]
+| `[macro-name x]         | `[`x`]
+| `macro-name[x, y]       | `[`[x, y]`]
+| `[macro-name: x]        | `[`{x}`]
+| `[macro-name x: y]      | `[`{x, y}`]
+| `[macro-name x: y, z]   | `[`{x, [y, z]}`]
+| `macro-name             | `[#void{}]
+
+The last situation is only triggered if the expander encounters
+`[macro-name] alone and with _no arguments. Note that the expression
+isn't inside backticks, you have to match `[#void{}], literally.
+
+__Example: __unless as a counterpart to `if:
 
 &   inline-macro unless(`{^cond, ^body}`):
        `if not ^cond: ^body`
@@ -1158,4 +1213,132 @@ Here is a simple macro for __assert:
     assert 1 == 2
     ;; => throws E.assert("Assertion failed: 1 == 2")
 
+
+=== macro
+
+Unlike `inline-macro, `macro is built to create exportable macros. The
+basic syntax is as follows:
+
+&   macro macro-name(expression) =
+       build-new-expression(expression)
+
+For example:
+
+`unless.eg:
+
+&   provide: unless
+    macro unless(`{^cond, ^body}`):
+       `if not ^cond: ^body`
+
+`script.eg:
+
+&   require-macros: "./unless" -> unless
+    unless 1 == 2:
+       print "all is well"
+
+==== Dependencies
+
+Some macros may need to produce code that refers to particular
+libraries, data structures, and so on. For this purpose it is possible
+to declare a list of dependencies for a macro:
+
+&   macro{dependencies, ...} macro-name(expression) =
+       build-new-expression(expression)
+
+Each listed dependency is then associated to a special symbol in
+`[@deps], and that symbol can be inserted in the generated code.
+
+Here's an example:
+
+`uniq.eg:
+
+&   provide: unique-id
+    var id = 0
+    next-id{} = id++
+    macro{next-id} unique-id(#void{}) =
+       let next-id-sym = @deps.next-id
+       `[^next-id-sym]{}`
+
+`script.eg:
+
+&   require-macros: "./uniq" -> unique-id
+    print unique-id    ;; 0
+    print unique-id    ;; 1
+    print unique-id    ;; 2
+    ...
+
+The unexported function `next-id in `uniq.eg is declared as a
+dependency by `unique-id, which can generate code using it. Behind the
+scenes, Earl Grey exports `next-id under a mangled name and
+automatically imports it along with `unique-id. In other words, the
+generated code will look a bit like this:
+
+&   require-macros: "./uniq" -> unique-id
+    require: "./uniq" -> next-id$0
+    print next-id$0{}
+    print next-id$0{}
+    print next-id$0{}
+    ...
+
+=== Hygiene
+
+__Hygiene is an important property of macro systems: the goal is to
+keep macros well-behaved by making sure that the variables defined in
+user code do not leak into macro-generated code, and vice versa. For
+instance, a macro generating an `if statement ought not to stop
+working if, for some reason, the user rebinds the `if variable.
+
+EG tags every node output by the parser with an `env field. Two
+symbols refer to the same variable if and only if looking up their
+names in their respective environments in their respective scopes
+yields the same reference for both. By default, code constructed using
+quote has no `env, but when it is returned to the macro expander,
+untagged nodes are tagged with a fresh environment that looks up
+bindings at the definition site. This protects the user's bindings
+from interfering with the macro's, and vice versa.
+
+By extracting the environment of its form or argument and tagging
+generated code snippets with it, a macro can "violate" hygiene. This
+lets it intentionally define variables for use inside the macro. This
+is typically done with the `[@env.mark] method. Here is an example:
+
+==== Capturing names
+
+&    inline-macro func(body):
+        ;; Create a function with a single argument named $
+        dolla = @env.mark(`$`)
+        `^dolla -> ^body`
+
+     add10 = func $ + 10
+     add10(91)        ;; ==> 101
+
+     first4 = func $.substring(0, 4)
+     first4("hello")  ;; ==> "hell"
+
+What we want to do is simple: we want to let the body of `func refer
+to its argument with `[$]. If we did this naively, e.g. by returning
+`[`$ -> ^body`], it would not work, because EG will think that the
+argument named `[$] and the occurrences of `[$] in the body refer to
+_[different variables]. This is usually a good thing, but now we want
+to defeat it.
+
+__[`[@env]] is the environment in which the call to the `func
+statement was made (it could be user code, or it could be another
+macro). `[@env.mark{`$`}] will therefore "mark" a `[$] symbol as
+belonging to that same environment, and we save that marked symbol in
+the `dolla variable. All we have to do, then, is to use this marked
+variable to declare the argument.
+
+.note %
+  You can also get an `env from `body or any other node (e.g. we could
+  have called `[body.env.mark(`$`)]). This will only make a difference
+  if they come from different environments, for instance if another
+  macro was to build the expression `[`func ^x`]. __[It is usually
+  safest] to use `[@env] because it refers to the macro call itself,
+  so unintended interference is rather unlikely.
+
+
+
 ]
+
+

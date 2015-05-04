@@ -16,26 +16,29 @@ js :: document.getElementById("logo").className = "navlink curnav"
 __[Earl Grey] is a neat little language that compiles to
 JavaScript. Here's what it has to offer:
 
-* [Python-like syntax _@@ #pythonlikesyntax]
+* [Concise and streamlined syntax _@@ #whatdoesitlookslike] inspired
+  from the Python language.
 * Fully [compatible _@@ #compatible] with the node.js ecosystem
 * Generators and [async/await _@@ #asyncawait] (no callback hell!)
 * Powerful, deeply integrated [pattern matching _@@ #patternmatching]
   * Used for assignment, function declaration, looping, exceptions...
-* A [document-building DSL _@@ #documentbuilding] with customizable behavior
-* A very powerful hygienic [macro _@@ #macrosystem] system that allows you to define:
-  * Your own control structures!
-  * New kinds of patterns for the pattern matcher!
-  * Modifiers that apply to the rest of a block!
-  * New kinds of macros!
-* And much more!
+* A [document-building DSL _@@ #documentbuilding] with customizable behavior!
+* A very powerful hygienic [macro _@@ #macrosystem] system!
+  * Define your own control structures or DSLs
+  * Macros integrate seamlessly with the language
+  * Macro libraries! Test with @@!earl-mocha, build with @@!earl-gulp,
+    make dynamic pages with @@!earl-react, etc.
+* And [much more! _@@ #resources]
 
 
-== Python-like syntax
+== What does it looks like?
 
-Like Python, EG uses indent to define blocks and line breaks to
-separate statements, which reduces punctuation noise. Several control
-structures, for instance conditionals and `while loops, will be
-perfectly familiar to Python users:
+Earl Grey is whitespace sensitive: _indent defines blocks and line
+breaks separate statements. This reduces the punctuation noise often
+seen in other languages in the form of braces and semicolons.
+
+Parts of the language will be very familiar to Python users, for
+instance this excerpt of a cutting edge rocket launching application:
 
 &  var i = 10
    while i > 0:
@@ -44,20 +47,23 @@ perfectly familiar to Python users:
       else:
          print i
 
-The rest of the language is less similar but retains a simple feel and
-consistent, minimalist syntax:
+But EG also takes steps towards a "streamlined" design that removes
+many of the spurious distinctions other languages make, for instance
+the distinction between expressions and statements, variable and
+function declarations, or loops and list comprehensions (which share
+the same syntax in EG):
 
 &  fib(n) =
       var {a, b} = {1, 1}
-      for i of 1..n:
+      1..n each i ->
          {a, b} = {b, a + b}
       a
-   
-   1..10 each i ->
-      print fib(i)
 
-EG's features are too numerous to list here, but you can read about
-them in the [documentation @@@ doc.html].
+   fibs = 0..10 each i -> fib(i)
+   print 'The first ten fibonacci numbers are {fibs.join(", ")}'
+
+You can read more about EG's many features in the
+[documentation @@@ doc.html].
 
 
 == Compatible
@@ -82,12 +88,13 @@ Promises as defined by ECMAScript version 6 and many libraries already
 implement this interface. For the rest, existing callback-based
 functionality can be converted to Promises using `promisify.
 
-Here's an example to give you an idea:
+To give you an idea here is a script to print the alt-text of the
+first ten XKCD@@http://xkcd.com comics, accessed through their JSON API:
 
 &   require: request
     g = promisify(request.get)
 
-    async getXKCD(n = 0) =
+    async getXKCD(n = "") =
        response = await g('http://xkcd.com/{n}/info.0.json')
        JSON.parse(response.body)
 
@@ -114,16 +121,48 @@ Pattern matching is the kind of feature that you can't tolerate not
 having, once you have a taste of it. A lot of languages implement
 crippled versions of it (usually as destructuring assignment). EG
 gives you _everything (short of actual static guarantees, but I'm
-thinking about it):
+thinking about it).
 
-&  repeat(String? thing or Array! thing, Number? match) =
+`match can serve as a `switch or `case statement:
+
+&  fact(n) =
+      match n:
+         0 -> 1
+         1 -> 1
+         n -> n * fact(n - 1)
+
+But we can do better:
+
+&  fact(match) =
+      0 or 1 -> 1
+      n -> n * fact(n - 1)
+
+We can extract elements from arrays:
+
+&  match process.argv[2..]:
+      {"install", name}     -> ...
+      {"list", query = "*"} -> ...
+      {"version"}           -> ...
+      ...
+
+From objects:
+
+&  point = {x = 2, y = 3}
+   {=> x, => y} = point   ;; x is 2, y is 3
+
+We can do type checking and type coercion:
+
+&  String? "abc"           ;; ==> true
+   Array! "abc"            ;; ==> {"abc"}
+
+   repeat(String? thing or Array! thing, Number? match) =
       0 -> {}
-      n -> thing ++ repeat(thing, n - 1)
+      n -> thing.concat(repeat(thing, n - 1))
    
-   repeat("hello", 4)      ==> "hellohellohellohello"
-   repeat({1, 2}, 2)       ==> {1, 2, 1, 2}
-   repeat(6, 3)            ==> {6, 6, 6}
-   repeat("apple", "pie")  ==> ERROR
+   repeat("hello", 4)      ;; ==> "hellohellohellohello"
+   repeat({1, 2}, 2)       ;; ==> {1, 2, 1, 2}
+   repeat(6, 3)            ;; ==> {6, 6, 6}
+   repeat("apple", "pie")  ;; ==> ERROR
 
 More exhaustive documentation can be found
 [here @@@ doc.html#patternmatching].
@@ -142,7 +181,7 @@ virtual DOM, and other things:
                td % i * j
 
 The resulting data structure can then be transformed in various ways.
-For instance, you may use the `[/html] and `[/dom] standard packages.
+For instance, you can use the `[/html] and `[/dom] standard packages:
 
 `html builds a string of HTML that you can print or save in a file:
 
@@ -154,18 +193,62 @@ For instance, you may use the `[/html] and `[/dom] standard packages.
 &  require: /dom
    document.get-element-by-id("target").append-child(dom(mul-table))
 
+You can also streamline the operation by importing a specialized `[%]
+operator to do what you want automatically:
+
+&  require-macros: /html -> (%)
+   print strong % "Hello world" ;; ==> "<strong>Hello world</strong>"
+
+=== React
+
+In addition to HTML and plain DOM conversions, there is also a
+react_@@{react} package for Earl Grey called @@!earl-react from which
+you can import a `[%] operator that builds React virtual DOM nodes:
+
+react => https://facebook.github.io/react/
+
+&  require: earl-react as React
+   require-macros: earl-react -> (%, component)
+   component HelloMessage:
+      render() = div % 'Hello {@props.name}'
+   React.render(HelloMessage % name = "Balthazar", mount-node)
+
+It would be straightforward to define `[%] for other frameworks, or
+for new ones, or to generate other languages such as LaTeX.
+
 
 == Macro system
 
 EG's macro system permits the definition of new control structures
 that look native to the language. Macros are fairly easy to write and
-can make code terser and more readable.
+can make code terser and more readable:
 
-You don't have to look very far for useful examples, as many existing
-JavaScript or node libraries can be enhanced by macros!
+&  inline-macro W(expr):
+      `(^expr).split(" ")`
+
+   W"apples bananas cantaloupes" ;; ==> {"apples", "bananas", "cantaloupes"}
 
 
-=== earl-mocha
+&  inline-macro unless(`{^test, ^body}`):
+      `if{not ^test, ^body}`
+
+   unless 1 == 2:
+      print "Everything is fine!"
+
+At the moment I have not yet well documented the macro system, but
+there is still some documentation [here @@@ doc.html#macros].
+
+
+=== Macro libraries
+
+It is possible to define macro libraries with macros importable via
+`require-macros.
+
+In fact, there are _already macro libraries for many existing
+JavaScript or node libraries! Here are some of them:
+
+
+=== Test with earl-mocha
 
 @@!earl-mocha defines a certain amount of macros to help you write
 tests for your applications:
@@ -184,7 +267,7 @@ tests for your applications:
             {1, 2, 3}.map("huh")
 
 
-=== earl-gulp
+=== Build with earl-gulp
 
 Using @@!earl-gulp, you can define gulp tasks like this:
 
@@ -209,4 +292,51 @@ Using @@!earl-gulp, you can define gulp tasks like this:
     task default < {earl, sass}
 
 
+=== Make pages with earl-react
+
+React has its own little language called JSX to define components, but
+there's no need for this when you have @@!earl-react:
+
+&   require: earl-react as React
+    require-macros: earl-react -> (%, component)
+    globals: document
+
+    component TodoList:
+       render() =
+          ul % enumerate(@props.items) each {i, item} ->
+             li % item
+    
+    component TodoApp:
+       get-initial-state() = {items = {}, text = ""}
+       render() =
+          div %
+             h3 % "TODO"
+             TodoList % items = @state.items
+             form %
+                on-submit(e) =
+                   e.prevent-default()
+                   @set-state with {
+                      items = @state.items.concat({@state.text})
+                      text = ""
+                   }
+                input %
+                   value = @state.text
+                   on-change(e) =
+                      @set-state with {text = e.target.value}
+                button % 'Add #{@state.items.length + 1}'
+
+    React.render(TodoApp % (), document.get-element-by-id("mount"))
+
+
+= Resources
+
+* [Install Earl Grey _@@ {siteroot}use.html].
+
+* Go through the [interactive tutorial _@@ {siteroot}repl]. It
+  runs in your browser, no need to install anything!
+
+* See the [documentation _@@ {siteroot}doc.html] for an overview of
+  all of EG's features.
+
+* There's an `[#earlgrey] channel on FreeNode, if you want to chat.
 
