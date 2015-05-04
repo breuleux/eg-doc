@@ -1076,7 +1076,8 @@ converted into something else, for instance HTML:
              href = "http://example.com"
              "stuff"
 
-    node.toHTML{}
+    require: /html
+    html(node)
 
 Would produce:
 
