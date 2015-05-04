@@ -140,7 +140,7 @@ hljs.register-language{.earlgrey} with {hljs} -> {
 
       {
          class-name = .keyword
-         begin = '(return|match|else|break|continue)(?![a-zA-Z$_0-9-])'
+         begin = '(return|match|else|break|continue|yield|expr-value|chain|await)(?![a-zA-Z$_0-9-])'
       }
 
       {
