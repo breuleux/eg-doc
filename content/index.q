@@ -30,6 +30,10 @@ JavaScript. Here's what it has to offer:
     make dynamic pages with @@!earl-react, etc.
 * And [much more! _@@ #resources]
 
+Earl Grey is still in development, be sure to
+[star it on GitHub]_@@https://github.com/breuleux/earl-grey
+to show some support!
+
 
 == What does it looks like?
 
