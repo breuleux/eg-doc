@@ -42,7 +42,8 @@ breaks separate statements. This reduces the punctuation noise often
 seen in other languages in the form of braces and semicolons.
 
 Parts of the language will be very familiar to Python users, for
-instance this excerpt of a cutting edge rocket launching application:
+instance this excerpt of a cutting edge rocket launching application
+in Earl Grey:
 
 &  var i = 10
    while i > 0:
