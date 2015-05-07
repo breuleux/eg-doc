@@ -16,6 +16,7 @@ require:
    del as _del
    gulp-sourcemaps
    gulp-uglify
+   gulp-autoprefixer
    vinyl-source-stream
    vinyl-buffer
    globby
@@ -40,10 +41,11 @@ paths = {
    content = "./content/**/*.q"
    fragments = "./fragments/**/*.json"
    sass = "./content/**/*.sass"
+   ;; css = "./content/**/*.css"
    eg = {"./content/**/*.eg", "!./content/repl/repl.eg"}
    egrepl = "./content/repl/repl.eg"
    assets = {
-      "png", "svg", "css", "json", "txt", "qdat"
+      "png", "svg", "json", "css", "txt", "qdat"
    } each ext -> './content/**/*.{ext}'
 }
 
@@ -88,8 +90,8 @@ create{} =
       env = @evaluator.store
       @evaluator = EGEvaluator{glob, gene, ev, topscope}
       @setenv with {
-         ;; siteroot = "/"
-         siteroot = "http://breuleux.github.io/earl-grey/"
+         siteroot = "/"
+         ;; siteroot = "http://breuleux.github.io/earl-grey/"
       }
       @register-rule with {
          "\\maybe\\lang & \\body"{engine, {=> lang, => body}} =
@@ -213,6 +215,7 @@ task sass:
    chain gulp:
       @src{paths.sass}
       @pipe{gulp-sass{indented-syntax = true}}
+      @pipe{gulp-autoprefixer{browsers = {"last 2 versions"}, cascade = false}}
       @pipe{gulp.dest{"./output"}}
 
 
@@ -257,6 +260,12 @@ task repl:
          @pipe{gulp.dest{"output"}}
          eos{@}
 
+
+;; task css:
+;;    chain gulp:
+;;       @src{paths.css}
+;;       @pipe{gulp-autoprefixer{browsers = {"last 2 versions"}, cascade = false}}
+;;       @pipe{gulp.dest{"./output"}}
 
 task assets:
    chain gulp:
