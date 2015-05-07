@@ -18,6 +18,8 @@ div #box %
     div #inputbox %
       textarea #code % []
 
+div #help %
+
 js ::
   document.getElementById("repl").className = "navlink curnav"
   repl = require("repl").setup();

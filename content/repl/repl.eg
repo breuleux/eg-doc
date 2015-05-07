@@ -4,7 +4,7 @@ require:
    "earlgrey/lib5/expand" ->
       topscope
    repple ->
-      Repl, DOM
+      Repl, DOM, Outputter
    quaint ->
       tools, create
       Text, Oper, Seq
@@ -67,11 +67,13 @@ egrepl{elements} =
       System = System
       DOM = DOM
       dir = require: /dir
+      jQuery = jquery
+      Outputter = Outputter
    }
 
    repl.eval with S[
       globals:
-         window, document, alert
+         window, document, alert, Element
 
       wait = promisify with {d, f} -> setTimeout.call{null, f, d}
 
@@ -102,10 +104,15 @@ egrepl{elements} =
          expr ->
             `$io[^=$currenti][^expr]`
 
-      inline-macro print{expr}:
-         ;; out = @mark{`$out`}
-         ;; `t = ^expr, $out.log{t}, t`
-         `t = ^expr, $io[$currenti].log{t}, t`
+      inline-macro print{match expr}:
+         `^expr in ^[#symbol{target}]` ->
+            ```
+            t = ^expr
+            Outputter{document.get-element-by-id{^=target}, true}.log{t}
+            t
+            ```
+         else ->
+            `t = ^expr, $io[$currenti].log{t}, t`
 
       inline-macro __require{#data{expr}}:
          ```
@@ -294,6 +301,7 @@ class ReplPlugin:
 async setup{} =
 
    box = document.getElementById{"box"}
+   help = document.getElementById{"help"}
    repl = egrepl with {
       box = box
       target = document.getElementById{"interactive"}
@@ -301,7 +309,8 @@ async setup{} =
       textarea = document.getElementById{"code"}
    }
 
-   box.style.height = '{Math.max{window.inner-height - 300, 500}}px'
+   help.style.height and box.style.height =
+      '{Math.max{window.inner-height - 250, 500}}px'
 
    cool-plugin = ReplPlugin{repl, .shuffle}
    tut-plugin = ReplPlugin{repl, .sort}
@@ -320,12 +329,14 @@ async setup{} =
    await repl.eval with S[
 
       fade-in{out, contents} =
-         out.elem.style.transition = "opacity 500ms";
-         out.elem.style.opacity = 0
-         window.getComputedStyle{out.elem}.opacity
-         out.elem.style.opacity = 1
-         out.log{contents}
+         printed = out.log{contents}
+         printed.style.transition = "opacity 500ms";
+         printed.style.opacity = 0
+         window.getComputedStyle{printed}.opacity
+         printed.style.opacity = 1
          undefined
+
+      $help = Outputter{document.get-element-by-id{"help"}, true}
 
       async __show-cool{out, name, history = true} =
          thecool = cools.get{name}
@@ -367,10 +378,10 @@ async setup{} =
                   x
 
       inline-macro next{#void{}}:
-         `__show-tut{$out, null}`
+         `__show-tut{$help, null}`
 
       inline-macro tut{x}:
-         `__show-tut{$out, ^name}` where
+         `__show-tut{$help, ^name}` where
             name = match x:
                #void{} ->
                   `null`
@@ -381,6 +392,9 @@ async setup{} =
    ]
 
    await repl.process{"next", false}
+
+   document.body.onclick{} =
+      repl.cm.focus{}
 
    repl.cm.focus{}
    repl
