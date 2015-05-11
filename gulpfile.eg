@@ -90,8 +90,8 @@ create{} =
       env = @evaluator.store
       @evaluator = EGEvaluator{glob, gene, ev, topscope}
       @setenv with {
-         siteroot = "/"
-         ;; siteroot = "http://breuleux.github.io/earl-grey/"
+         ;; siteroot = "/"
+         siteroot = "/earl-grey/"
       }
       @register-rule with {
          "\\maybe\\lang & \\body"{engine, {=> lang, => body}} =

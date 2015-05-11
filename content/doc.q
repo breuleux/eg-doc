@@ -166,6 +166,11 @@ You can also "mix" the notations:
 
 &   {1, 2, a = 3, b = 4} ;; an array with fields named a and b
 
+__[Empty data structures] are denoted as follows:
+
+&   empty-array  = {}
+    empty-object = {=}
+
 
 == Functions
 
@@ -771,7 +776,7 @@ Here's how it works:
 * `[require: fs] fetches node.js's filesystem module
 
 * `promisify(fs.readFile) changes [`fs.readFile]'s callback-based
-  interface to a Promise-baed interface, which is necessary to work
+  interface to a Promise-based interface, which is necessary to work
   with async.
 
   `promisify should work on any function that implements node's callback

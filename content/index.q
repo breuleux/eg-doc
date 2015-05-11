@@ -17,7 +17,7 @@ __[Earl Grey] is a neat little language that compiles to
 JavaScript. Here's what it has to offer:
 
 * [Concise and streamlined syntax _@@ #whatdoesitlookslike] inspired
-  from the Python language.
+  by the Python language.
 * Fully [compatible _@@ #compatible] with the node.js ecosystem
 * Generators and [async/await _@@ #asyncawait] (no callback hell!)
 * Powerful, deeply integrated [pattern matching _@@ #patternmatching]
@@ -46,11 +46,12 @@ instance this excerpt of a cutting edge rocket launching application
 in Earl Grey:
 
 &  var i = 10
-   while i > 0:
+   while i >= 0:
       if i == 0:
          print "Blast off!"
       else:
          print i
+      i--
 
 But EG also takes steps towards a "streamlined" design that removes
 many of the spurious distinctions other languages make, for instance

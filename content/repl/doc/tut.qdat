@@ -144,26 +144,25 @@
   Depending on the situation, there are four ways to do it. Yes,
   four. Do you have a problem with that?
 
-  # Declare a named function, especially if you need it elsewhere:
+  # [Declare a named function, especially if you need it elsewhere:]
 
     / f(x) = print x
       {1, 2, 3}.for-each(f)
 
-  # Inline, for small functions
+  # [Inline, for small functions]
 
     / {1, 2, 3}.for-each(x -> print x)
 
-  # `with operator, to avoid brackets and indent the body, when
-    the function is the last argument
+  # [`with operator, to avoid brackets and indent the body, when the function is the last argument]
 
     / {1, 2, 3}.for-each with x ->
          print x
 
-  # `where operator, if it is clearer\/more practical to name the
-    function, especially when the function isn't the last argument
+  # [`where operator, if it is clearer\/more practical to name the function, especially when the function isn't the last argument]
 
-    / set-timeout(f, 1000) where f() =
-         print "watch for it..."
+    / print "watch for it..."
+      set-timeout(f, 1000) where f() =
+         print "there it is!"
 
   Type /next to get to the next topic.
 
@@ -204,7 +203,7 @@
   C-style `for loops are available, if for some reason you want to use
   them, but they require commas instead of semicolons:
 
-  / for (var i = 10, i >= 0, i--): print i
+  / for (var i = 10; i >= 0; i--): print i
 
   `break and `continue inside loops work as they do in other
   languages.
@@ -327,9 +326,10 @@
           tr % 1..10 each col ->
              td % row * col
 
-  These objects can be converted to HTML using the `toHTML method:
+  These objects can be converted to HTML with the `[/html] package:
 
-  / (em % "hello").toHTML()
+  / require: /html
+    html(em % "hello")
 
   Type /next to get to the next topic.
 
@@ -337,7 +337,8 @@
 [100-libraries = Libraries] --->
 
   Use `require to import libraries. If you use it here, it will import
-  from the `npm repositories. Pretty neat!
+  from the `npm repositories. Pretty neat! (Give a few seconds for the
+  package to be fetched the first time, it can be a bit slow).
 
   / require: markdown
     div[raw] % markdown.parse("This *works*! Yay!")

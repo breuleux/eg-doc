@@ -394,7 +394,8 @@ async setup{} =
    await repl.process{"next", false}
 
    document.body.onclick{} =
-      repl.cm.focus{}
+      if document.get-selection{}.to-string{} == "":
+         repl.cm.focus{}
 
    repl.cm.focus{}
    repl
