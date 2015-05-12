@@ -34,6 +34,8 @@ Earl Grey is still in development, be sure to
 [star it on GitHub]_@@https://github.com/breuleux/earl-grey
 to show some support!
 
+Also be sure to check out the [interactive tutorial _@@ {siteroot}repl].
+
 
 == What does it looks like?
 
@@ -85,6 +87,16 @@ packages that JavaScript code may import and use.
 
 EG has support for source maps. Plugins exist for a few existing
 frameworks: @@!gulp-earl for gulp, @@!earlify for browserify.
+
+==== Tooling
+
+Editor support is admittedly mediocre at the moment, but it is in
+development:
+
+* __Emacs: @@!earl-grey-mode
+
+* __Atom: in development :\)
+
 
 
 == async/await
@@ -336,7 +348,13 @@ there's no need for this when you have @@!earl-react:
 
 = Resources
 
-* [Install Earl Grey _@@ {siteroot}use.html].
+* Source code _@@ https://github.com/breuleux/earl-grey
+
+* Report an issue _@@ https://github.com/breuleux/earl-grey/issues
+
+* Install Earl Grey _@@ {siteroot}use.html
+
+* Editor/syntax highlighting support _@@ {siteroot}tooling.html
 
 * Go through the [interactive tutorial _@@ {siteroot}repl]. It
   runs in your browser, no need to install anything!
@@ -344,5 +362,14 @@ there's no need for this when you have @@!earl-react:
 * See the [documentation _@@ {siteroot}doc.html] for an overview of
   all of EG's features.
 
-* There's an `[#earlgrey] channel on FreeNode, if you want to chat.
+* Contribute! _@@ {siteroot}contrib.html
+
+* Join the gitter chat! {gitter}
+
+* Or join the `[#earlgrey] channel on FreeNode.
+
+
+
+gitter =>
+  html :: <a href="https://gitter.im/breuleux/earl-grey?utm_source=badge&amp;utm_medium=badge&amp;utm_campaign=pr-badge&amp;utm_content=badge"><img src="https://camo.githubusercontent.com/da2edb525cde1455a622c58c0effc3a90b9a181c/68747470733a2f2f6261646765732e6769747465722e696d2f4a6f696e253230436861742e737667" alt="Join the chat at https://gitter.im/breuleux/earl-grey" data-canonical-src="https://badges.gitter.im/Join%20Chat.svg" style="max-width:100%;"></a>
 

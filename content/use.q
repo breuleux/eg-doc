@@ -239,6 +239,15 @@ regular expressions, for example:
        else ->
           "This is not an email at all!"
 
+= Tooling support
+
+Click here @@ {siteroot}tooling.html
+for details about current support for editors and syntax highlighting.
+
+Read this @@ {siteroot}contrib.html
+if you wish to contribute tools for popular editors or libraries.
+
+
 = Learn more
 
 * Go through the [interactive tutorial _@@ {siteroot}repl]. It
