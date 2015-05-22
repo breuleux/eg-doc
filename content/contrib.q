@@ -144,6 +144,11 @@ avoid highlighting `nokey.
    ;; Highlight all of these:
    await; break; chain; continue; else; expr-value; match; return; yield
 
+Just for the record, there is a small bug in the highlighter I use on
+this page that makes it so that the `mod operator above isn't bolded,
+even though it should be. This is caused by some unfortunate
+interference between some of my rules. Pretend they are bolded.
+
 
 == Edge-case highlighting test
 

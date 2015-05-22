@@ -16,7 +16,7 @@ js :: document.getElementById("logo").className = "navlink curnav"
 __[Earl Grey] is a neat little language that compiles to
 JavaScript. Here's what it has to offer:
 
-* [Concise and streamlined syntax _@@ #whatdoesitlookslike] inspired
+* [Concise and streamlined syntax _@@ #whatdoesitlooklike] inspired
   by the Python language.
 * Fully [compatible _@@ #compatible] with the node.js ecosystem
 * Generators and [async/await _@@ #asyncawait] (no callback hell!)
@@ -37,7 +37,7 @@ to show some support!
 Also be sure to check out the [interactive tutorial _@@ {siteroot}repl].
 
 
-== What does it looks like?
+== What does it look like?
 
 Earl Grey is whitespace sensitive: _indent defines blocks and line
 breaks separate statements. This reduces the punctuation noise often
