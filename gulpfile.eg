@@ -41,9 +41,9 @@ paths = {
    content = "./content/**/*.q"
    fragments = "./fragments/**/*.json"
    sass = "./content/**/*.sass"
-   ;; css = "./content/**/*.css"
-   eg = {"./content/**/*.eg", "!./content/repl/repl.eg"}
+   eg = {"./content/**/*.eg", "!./content/repl/repl.eg", "!./content/edit/edit.eg"}
    egrepl = "./content/repl/repl.eg"
+   eged = "./content/edit/edit.eg"
    assets = {
       "png", "svg", "json", "css", "txt", "qdat"
    } each ext -> './content/**/*.{ext}'
@@ -90,8 +90,8 @@ create{} =
       env = @evaluator.store
       @evaluator = EGEvaluator{glob, gene, ev, topscope}
       @setenv with {
-         ;; siteroot = "/"
-         siteroot = "/earl-grey/"
+         siteroot = "/"
+         ;; siteroot = "/earl-grey/"
       }
       @register-rule with {
          "\\maybe\\lang & \\body"{engine, {=> lang, => body}} =
@@ -218,54 +218,34 @@ task sass:
       @pipe{gulp-autoprefixer{browsers = {"last 2 versions"}, cascade = false}}
       @pipe{gulp.dest{"./output"}}
 
+async script-task{paths} =
+   require:
+      earlify, browserify
+   files = await glob{paths}
+   await all files each file ->
+      b = browserify with {
+         entries = {file}
+         transform = {earlify}
+      }
+      b.require{file, {expose = path.basename{file}[...-3]}}
+      target = chain file:
+         @replace{R".eg$", ".js"}
+         @replace{R"^./content/", ""}
+      chain b.bundle{}:
+         @pipe{vinyl-source-stream{target}}
+         @pipe{vinyl-buffer{}}
+         ;; @pipe{gulp-uglify{}}
+         @pipe{gulp.dest{"output"}}
+         eos{@}
 
 task scripts:
-   require:
-      earlify, browserify
-   files = await glob{paths.eg}
-   await all files each file ->
-      b = browserify with {
-         entries = {file}
-         transform = {earlify}
-      }
-      b.require{file, {expose = path.basename{file}[...-3]}}
-      target = chain file:
-         @replace{R".eg$", ".js"}
-         @replace{R"^./content/", ""}
-      chain b.bundle{}:
-         @pipe{vinyl-source-stream{target}}
-         @pipe{vinyl-buffer{}}
-         @pipe{gulp-uglify{}}
-         @pipe{gulp.dest{"output"}}
-         eos{@}
+   script-task{paths.eg}
 
+task editor:
+   script-task{paths.eged}
 
 task repl:
-   require:
-      earlify, browserify
-   files = await glob{paths.egrepl}
-   await all files each file ->
-      b = browserify with {
-         entries = {file}
-         transform = {earlify}
-      }
-      b.require{file, {expose = path.basename{file}[...-3]}}
-      target = chain file:
-         @replace{R".eg$", ".js"}
-         @replace{R"^./content/", ""}
-      chain b.bundle{}:
-         @pipe{vinyl-source-stream{target}}
-         @pipe{vinyl-buffer{}}
-         @pipe{gulp-uglify{}}
-         @pipe{gulp.dest{"output"}}
-         eos{@}
-
-
-;; task css:
-;;    chain gulp:
-;;       @src{paths.css}
-;;       @pipe{gulp-autoprefixer{browsers = {"last 2 versions"}, cascade = false}}
-;;       @pipe{gulp.dest{"./output"}}
+   script-task{paths.egrepl}
 
 task assets:
    chain gulp:
