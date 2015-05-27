@@ -14,9 +14,17 @@ globals:
    document, window, alert, setTimeout, Element
    decodeURIComponent
 
+
 dom-node-clear{x} =
    while x.children.length > 0:
       x.removeChild{x.children[0]}
+
+
+normalize-module-name{match} =
+   RegExp{"^raw:"}? x -> x.slice{4}
+   RegExp{":"}? x -> x
+   x -> "npm:" + x
+
 
 eged{elements} =
 
@@ -37,11 +45,18 @@ eged{elements} =
 
    $out = Outputter{elements.results, true}
 
-   ev{text} =
-      let code = gene.generate{eg.Source{text, "<repl>"}}
-      _ev{code}
-   evi{text} =
-      let code = gene.generateInteractive{eg.Source{text, "<repl>"}}
+   ;; ev{text} =
+   ;;    code = gene.generate{eg.Source{text, "<repl>"}}
+   ;;    _ev{code}
+
+   async evi{text} =
+      var code = null
+      try:
+         code = gene.generateInteractive{eg.Source{text, "<repl>"}}
+      catch E.please-load? {message => module-name}:
+         __reqcache[module-name] =
+            await System.import{normalize-module-name{module-name}}
+         return evi{text}
       _ev{code}
 
    ed = Editor with {
@@ -68,6 +83,8 @@ eged{elements} =
          glob[name] = value
       undefined
 
+   __reqcache = {=}
+
    ed.setenv with {
       $out = $out
       $currenti = -1
@@ -76,6 +93,8 @@ eged{elements} =
       dir = require: /dir
       jQuery = jquery
       Outputter = Outputter
+      = normalize-module-name
+      = __reqcache
    }
 
    ed.eval with S[
@@ -115,12 +134,18 @@ eged{elements} =
 
       inline-macro __require{#data{expr}}:
          ```
-         t = ^expr
-         name = match t:
-            RegExp{"^raw:"}? x -> x.slice{4}
-            RegExp{":"}? x -> x
-            x -> "npm:" + x
-         await System.import{name}
+         await System.import{normalize-module-name{^expr}}
+         ```
+
+      inline-macro __require-m{#data{expr}}:
+         ```
+         match __reqcache[^expr]:
+            undefined? ->
+               throw E.please-load{^expr}
+            Error? e ->
+               throw e
+            module ->
+               module
          ```
 
       inline-macro load{url}:
@@ -152,4 +177,5 @@ setup{} =
       $ed = ed
    }
    ed.cm.focus{}
+   ed.cm.set-size{.auto, "100%"}
    ed

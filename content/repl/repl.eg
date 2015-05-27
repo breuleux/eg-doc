@@ -18,6 +18,12 @@ globals:
    decodeURIComponent
 
 
+normalize-module-name{match} =
+   RegExp{"^raw:"}? x -> x.slice{4}
+   RegExp{":"}? x -> x
+   x -> "npm:" + x
+
+
 egrepl{elements} =
 
    globvar = "$eg$global"
@@ -35,11 +41,22 @@ egrepl{elements} =
       cwd = "<repl>"
    }
 
-   ev{text} =
-      let code = gene.generate{eg.Source{text, "<repl>"}}
-      _ev{code}
-   evi{text} =
-      let code = gene.generateInteractive{eg.Source{text, "<repl>"}}
+   ;; ev{text} =
+   ;;    let code = gene.generate{eg.Source{text, "<repl>"}}
+   ;;    _ev{code}
+
+   ;; evi{text} =
+   ;;    let code = gene.generateInteractive{eg.Source{text, "<repl>"}}
+   ;;    _ev{code}
+
+   async evi{text} =
+      var code = null
+      try:
+         code = gene.generateInteractive{eg.Source{text, "<repl>"}}
+      catch E.please-load? {message => module-name}:
+         __reqcache[module-name] =
+            await System.import{normalize-module-name{module-name}}
+         return evi{text}
       _ev{code}
 
    repl = Repl with {
@@ -54,6 +71,8 @@ egrepl{elements} =
 
    glob = global
 
+   __reqcache = {=}
+
    repl.setenv{values} =
       items{values} each {name, value} ->
          gene.env.bind{topscope, name, #variable{name}}
@@ -67,7 +86,9 @@ egrepl{elements} =
       DOM = DOM
       dir = require: /dir
       jQuery = jquery
-      Outputter = Outputter
+      = normalize-module-name
+      = Outputter
+      = __reqcache
    }
 
    repl.eval with S[
@@ -115,12 +136,18 @@ egrepl{elements} =
 
       inline-macro __require{#data{expr}}:
          ```
-         t = ^expr
-         name = match t:
-            RegExp{"^raw:"}? x -> x.slice{4}
-            RegExp{":"}? x -> x
-            x -> "npm:" + x
-         await System.import{name}
+         await System.import{normalize-module-name{^expr}}
+         ```
+
+      inline-macro __require-m{#data{expr}}:
+         ```
+         match __reqcache[^expr]:
+            undefined? ->
+               throw E.please-load{^expr}
+            Error? e ->
+               throw e
+            module ->
+               module
          ```
 
       inline-macro load{url}:

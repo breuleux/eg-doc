@@ -89,8 +89,8 @@ create{} =
       env = @evaluator.store
       @evaluator = EGEvaluator{glob, gene, ev, topscope}
       @setenv with {
-         siteroot = "/"
-         ;; siteroot = "/earl-grey/"
+         ;; siteroot = "/"
+         siteroot = "/earl-grey/"
       }
       @register-rule with {
          "\\maybe\\lang & \\body"{engine, {=> lang, => body}} =
@@ -239,7 +239,7 @@ async script-task{paths, opts} =
          eos{@}
 
 task scripts:
-   script-task{paths.eg, externals = "eg"}
+   script-task{paths.eg, externals = "eg", uglify = true}
 
 task scripts2:
    script-task{paths.expensive, uglify = true}
