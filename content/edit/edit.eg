@@ -88,13 +88,14 @@ eged{elements} =
    ed.setenv with {
       $out = $out
       $currenti = -1
-      System = System
-      DOM = DOM
       dir = require: /dir
       jQuery = jquery
-      Outputter = Outputter
+      = System
+      = DOM
+      = Outputter
       = normalize-module-name
       = __reqcache
+      = global
    }
 
    ed.eval with S[

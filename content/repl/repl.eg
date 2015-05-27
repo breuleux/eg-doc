@@ -82,13 +82,14 @@ egrepl{elements} =
    repl.setenv with {
       $io = {}
       $currenti = -1
-      System = System
-      DOM = DOM
       dir = require: /dir
       jQuery = jquery
+      = System
+      = DOM
       = normalize-module-name
       = Outputter
       = __reqcache
+      = global
    }
 
    repl.eval with S[
