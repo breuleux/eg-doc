@@ -218,7 +218,7 @@ task sass:
       @pipe{gulp-autoprefixer{browsers = {"last 2 versions"}, cascade = false}}
       @pipe{gulp.dest{"./output"}}
 
-async script-task{paths} =
+async script-task{paths, *externals} =
    require:
       earlify, browserify
    files = await glob{paths}
@@ -227,6 +227,7 @@ async script-task{paths} =
          entries = {file}
          transform = {earlify}
       }
+      b.external{externals}
       b.require{file, {expose = path.basename{file}[...-3]}}
       target = chain file:
          @replace{R".eg$", ".js"}
@@ -242,10 +243,10 @@ task scripts:
    script-task{paths.eg}
 
 task editor:
-   script-task{paths.eged}
+   script-task{paths.eged, "eg"}
 
 task repl:
-   script-task{paths.egrepl}
+   script-task{paths.egrepl, "eg"}
 
 task assets:
    chain gulp:

@@ -6,6 +6,7 @@ meta ::
       Editor for Earl Grey.
    include =
       https://jspm.io/system@0.16.js
+      /lib/eg.js
       /edit/edit.js
       /edit/style/edit.css
       /repl/style/codemirror.css

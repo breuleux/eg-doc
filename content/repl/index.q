@@ -6,6 +6,7 @@ meta ::
       REPL for Earl Grey.
    include =
       https://jspm.io/system@0.16.js
+      /lib/eg.js
       /repl/repl.js
       /repl/style/repl.css
       /repl/style/codemirror.css

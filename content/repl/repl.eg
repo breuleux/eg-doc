@@ -1,14 +1,13 @@
 
 require:
-   "earlgrey/5" as eg
-   "earlgrey/lib5/expand" ->
-      topscope
-   repple ->
-      Repl, DOM, Outputter
+   "eg" ->
+      eg, topscope
+      repple ->
+         Repl, Editor, DOM, Outputter
+      jquery
    quaint ->
       tools, create
       Text, Oper, Seq
-   jquery
 
 provide:
    setup

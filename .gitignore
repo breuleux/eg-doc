@@ -1,6 +1,5 @@
 *~
 *.map
-lib
 node_modules
 junk
 egcache

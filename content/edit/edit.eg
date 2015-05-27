@@ -1,11 +1,10 @@
 
 require:
-   "earlgrey/5" as eg
-   "earlgrey/lib5/expand" ->
-      topscope
-   repple ->
-      Editor, DOM, Outputter
-   jquery
+   "eg" ->
+      eg, topscope
+      repple ->
+         Editor, DOM, Outputter
+      jquery
 
 provide:
    setup
