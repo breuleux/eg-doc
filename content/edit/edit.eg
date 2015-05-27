@@ -169,7 +169,7 @@ fget{url} =
       }
 
 
-setup{} =
+async setup{} =
    results = document.get-element-by-id{"result"}
    textarea = document.get-element-by-id{"textarea-editor"}
    ed = eged{= textarea, = results}
@@ -178,4 +178,14 @@ setup{} =
    }
    ed.cm.focus{}
    ed.cm.set-size{.auto, "100%"}
+   match window.location.search[1..].split{"/"}[0]:
+      "" ->
+         pass
+      name ->
+         text =
+            try:
+               await fget{'../examples/{name}'}
+            catch e:
+               ';; Could not load example: {name}'
+         ed.cm.set-value{text}
    ed
