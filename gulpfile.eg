@@ -41,9 +41,8 @@ paths = {
    content = "./content/**/*.q"
    fragments = "./fragments/**/*.json"
    sass = "./content/**/*.sass"
-   eg = {"./content/**/*.eg", "!./content/repl/repl.eg", "!./content/edit/edit.eg"}
-   egrepl = "./content/repl/repl.eg"
-   eged = "./content/edit/edit.eg"
+   eg = {"./content/**/*.eg", "!./content/lib/eg.eg"}
+   expensive = "./content/lib/eg.eg"
    assets = {
       "png", "svg", "json", "css", "txt", "qdat"
    } each ext -> './content/**/*.{ext}'
@@ -218,7 +217,7 @@ task sass:
       @pipe{gulp-autoprefixer{browsers = {"last 2 versions"}, cascade = false}}
       @pipe{gulp.dest{"./output"}}
 
-async script-task{paths, *externals} =
+async script-task{paths, opts} =
    require:
       earlify, browserify
    files = await glob{paths}
@@ -227,7 +226,7 @@ async script-task{paths, *externals} =
          entries = {file}
          transform = {earlify}
       }
-      b.external{externals}
+      b.external{opts.externals or {}}
       b.require{file, {expose = path.basename{file}[...-3]}}
       target = chain file:
          @replace{R".eg$", ".js"}
@@ -235,18 +234,15 @@ async script-task{paths, *externals} =
       chain b.bundle{}:
          @pipe{vinyl-source-stream{target}}
          @pipe{vinyl-buffer{}}
-         ;; @pipe{gulp-uglify{}}
+         if{opts.uglify, @pipe{gulp-uglify{}}, @}
          @pipe{gulp.dest{"output"}}
          eos{@}
 
 task scripts:
-   script-task{paths.eg}
+   script-task{paths.eg, externals = "eg"}
 
-task editor:
-   script-task{paths.eged, "eg"}
-
-task repl:
-   script-task{paths.egrepl, "eg"}
+task scripts2:
+   script-task{paths.expensive, uglify = true}
 
 task assets:
    chain gulp:
