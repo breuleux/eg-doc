@@ -50,7 +50,11 @@ bash &    npm install earlgrey-runtime --save
 = Workflow
 
 At the moment you can use EG standalone, compile it, use it with
-gulp_@@{gulp}, and/or with browserify_@@{browserify}
+gulp_@@{gulp}, and/or run it in the browser with
+browserify_@@{browserify}.
+
+gulp => https://github.com/gulpjs/gulp/blob/master/docs/getting-started.md
+browserify => http://browserify.org
 
 === Standalone
 
@@ -128,18 +132,25 @@ egulp => https://github.com/breuleux/earl-gulp
 Don't forget to also install the runtime@@[#runtime].
 
 
-=== With browserify
+=== In the browser
 
+In order to use EG scripts in the browser, it is necessary to bundle
+them using browserify_@@{browserify}.
+br %
 The earlify_@@{earlify} package defines a source transformer for use with
 `browserify. Install it:
-
 bash &    npm install earlify --save
-
 Then run it like this:
-
 bash &    browserify -t earlify script.eg > bundle.js
-
 Don't forget to also install the runtime@@[#runtime].
+.note %
+  Global variables like `document or `window are not available by
+  default in Earl Grey. You must declare them like this:
+  &   globals:
+         document, window
+  The same goes if you include external scripts on your page and they
+  declare global variables that you want to use: declare their
+  existence in a `globals block, then use them as you normally would.
 
 
 = What does it look like?
