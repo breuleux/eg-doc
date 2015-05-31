@@ -37,6 +37,7 @@ del = promisify{_del}
 
 
 paths = {
+   output = "./output/earl-grey"
    templates = "./template/**/*.q"
    content = "./content/**/*.q"
    fragments = "./fragments/**/*.json"
@@ -44,7 +45,7 @@ paths = {
    eg = {"./content/**/*.eg", "!./content/lib/eg.eg"}
    expensive = "./content/lib/eg.eg"
    assets = {
-      "png", "svg", "json", "css", "txt", "qdat"
+      "png", "svg", "json", "css", "txt", "qdat", "eg"
    } each ext -> './content/**/*.{ext}'
 }
 
@@ -89,7 +90,6 @@ create{} =
       env = @evaluator.store
       @evaluator = EGEvaluator{glob, gene, ev, topscope}
       @setenv with {
-         ;; siteroot = "/"
          siteroot = "/earl-grey/"
       }
       @register-rule with {
@@ -207,7 +207,7 @@ task finalize < {template, readFragments}:
    chain gulp:
       @src{paths.fragments}
       @pipe{fill-template{}}
-      @pipe{gulp.dest{"./output"}}
+      @pipe{gulp.dest{paths.output}}
 
 
 task sass:
@@ -215,12 +215,12 @@ task sass:
       @src{paths.sass}
       @pipe{gulp-sass{indented-syntax = true}}
       @pipe{gulp-autoprefixer{browsers = {"last 2 versions"}, cascade = false}}
-      @pipe{gulp.dest{"./output"}}
+      @pipe{gulp.dest{paths.output}}
 
-async script-task{paths, opts} =
+async script-task{p, opts} =
    require:
       earlify, browserify
-   files = await glob{paths}
+   files = await glob{p}
    await all files each file ->
       b = browserify with {
          entries = {file}
@@ -235,7 +235,7 @@ async script-task{paths, opts} =
          @pipe{vinyl-source-stream{target}}
          @pipe{vinyl-buffer{}}
          if{opts.uglify, @pipe{gulp-uglify{}}, @}
-         @pipe{gulp.dest{"output"}}
+         @pipe{gulp.dest{paths.output}}
          eos{@}
 
 task scripts:
@@ -247,7 +247,7 @@ task scripts2:
 task assets:
    chain gulp:
       @src{paths.assets}
-      @pipe{gulp.dest{"./output"}}
+      @pipe{gulp.dest{paths.output}}
 
 
 
