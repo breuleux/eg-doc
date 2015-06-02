@@ -10,7 +10,7 @@ meta ::
 
 
 div#toc %
-  js :: document.getElementById("use").className = "navlink curnav"
+  js :: //document.getElementById("use").className = "navlink curnav dropdown"
   toc::below
 div#main % [
 

@@ -7,7 +7,7 @@ meta ::
    template = twocol
 
 div#toc %
-  js :: document.getElementById("doc").className = "navlink curnav"
+  js :: //document.getElementById("doc").className = "navlink curnav"
   toc::below
 div#main % [
 
