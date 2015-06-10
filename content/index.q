@@ -14,7 +14,7 @@ js :: document.getElementById("logo").className = "navlink curnav"
 [\maybe\text @@@ \maybe\path] => {text}@@{siteroot}{path}
 
 __[Earl Grey] is a neat little language that compiles to
-JavaScript. Here's what it has to offer:
+JavaScript. Here's what it has to offer: ZZZ
 
 * [Concise and streamlined syntax _@@ #whatdoesitlooklike] inspired
   by the Python language.
@@ -364,6 +364,8 @@ there's no need for this when you have @@!earl-react:
 
 * Contribute! _@@ {siteroot}contrib.html
 
+* Follow us on twitter! {twitter}
+
 * Join the gitter chat! {gitter}
 
 * Or join the `[#earlgrey] channel on FreeNode.
@@ -373,3 +375,7 @@ there's no need for this when you have @@!earl-react:
 gitter =>
   html :: <a href="https://gitter.im/breuleux/earl-grey?utm_source=badge&amp;utm_medium=badge&amp;utm_campaign=pr-badge&amp;utm_content=badge"><img src="https://camo.githubusercontent.com/da2edb525cde1455a622c58c0effc3a90b9a181c/68747470733a2f2f6261646765732e6769747465722e696d2f4a6f696e253230436861742e737667" alt="Join the chat at https://gitter.im/breuleux/earl-grey" data-canonical-src="https://badges.gitter.im/Join%20Chat.svg" style="max-width:100%;"></a>
 
+twitter =>
+   html ::
+      <a href="https://twitter.com/earlgreylang" class="twitter-follow-button" data-show-count="false">Follow @earlgreylang</a>
+      <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>

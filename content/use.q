@@ -19,7 +19,7 @@ div#main % [
 First you will need to install:
 
 * iojs_@@{iojs}, which is a fork of node.js with support for ES6.
-  .note %
+  div.note %
     If you have `node installed, you can use the `earl5 command instead
 * npm_@@{npm}, the package manager for node/iojs
 
@@ -121,7 +121,7 @@ javascript &
         .pipe(gulp.dest('./build/'))
     });
 
-.tip %
+div.tip %
   You can also write gulpfiles in Earl Grey. The [earl-gulp]_@@{egulp}
   package defines a neat `task macro for the purpose. Do note that
   this is the `earl-gulp package and not the `gulp-earl package. They
@@ -136,14 +136,19 @@ Don't forget to also install the runtime@@[#runtime].
 
 In order to use EG scripts in the browser, it is necessary to bundle
 them using browserify_@@{browserify}.
-br %
+
 The earlify_@@{earlify} package defines a source transformer for use with
 `browserify. Install it:
+
 bash &    npm install earlify --save
+
 Then run it like this:
+
 bash &    browserify -t earlify script.eg > bundle.js
+
 Don't forget to also install the runtime@@[#runtime].
-.note %
+
+div.note %
   Global variables like `document or `window are not available by
   default in Earl Grey. You must declare them like this:
   &   globals:

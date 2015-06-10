@@ -8,6 +8,7 @@ meta ::
 
 div#toc %
   toc::below
+
 div#main % [
 
 [\label _@@ \url] => __[{label} @@ {url}]
@@ -40,9 +41,6 @@ Also scattered.
 If you wish to __contribute syntax highlighting for a library which is
 currently not supported, please consult these
 [guidelines]_@@{siteroot}contrib.html#syntaxhighlighting.
-
-
-
 
 ]
 

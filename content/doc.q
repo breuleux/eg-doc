@@ -222,12 +222,14 @@ last evaluated expression is used as the return value.
 
 Operator applications in EG, such as `[a + b], desugar to the function
 call `[+]{a, b}. You can thus redefine almost any operator locally:
+
 &   bizarro(a, b) =
        let x + y = outer{+}{x, y}
        let x - y = outer{-}{x, y}
        a + b - c
     bizarro(10, 20, 10)  ;; ==> 0
-.note %
+
+div.note %
   * `let must be used in order to shadow the existing bindings.
   * `outer returns the previous binding of a variable, which is
     necessary above to avoid unwanted mutual recursion.
@@ -278,6 +280,7 @@ need to use `while.label, just like this:
 EG defines `for statements that are a cross between JavaScript's
 semantics and Python's syntax, which means that it comes in three
 flavors:
+
 &   for (var i = 0; i < 10; i++):
        print i
 
@@ -289,7 +292,8 @@ flavors:
 They work like you'd expect (with one little gotcha*). I'm telling you
 about them because you are free to use what you see fit, but in my
 opinion, __[`for should not be used]:
-.warning %
+
+div.warning %
   *Earl Grey parses commas and semicolons as essentially the same, so
   this will not work:
 
@@ -834,7 +838,7 @@ doesn't matter.
    bob = Person("bob", 44)
    bob.advance-inexorably-towards-death()
 
-.note %
+div.note %
   The `new keyword may be needed to instantiate some classes in third
   party packages, check their documentation to be sure.
 
@@ -925,7 +929,7 @@ them, but it's easy enough:
    ;; the following is true
    3 in mul3
 
-.note %
+div.note %
   Don't forget the parentheses around `(^Symbol.iterator) and friends.
   Otherwise you will get an error like "symbol/string is not a function".
   That's normal because `[^] means to set the key corresponding to the
@@ -1335,7 +1339,7 @@ belonging to that same environment, and we save that marked symbol in
 the `dolla variable. All we have to do, then, is to use this marked
 variable to declare the argument.
 
-.note %
+div.note %
   You can also get an `env from `body or any other node (e.g. we could
   have called `[body.env.mark(`$`)]). This will only make a difference
   if they come from different environments, for instance if another
