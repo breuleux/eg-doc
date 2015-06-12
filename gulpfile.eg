@@ -17,6 +17,7 @@ require:
    gulp-sourcemaps
    gulp-uglify
    gulp-autoprefixer
+   gulp-watch
    vinyl-source-stream
    vinyl-buffer
    globby
@@ -178,6 +179,17 @@ transformer! memo-fragment{{p, contents}, enc} =
          {k, ENode.fromObject{v}}
    null
 
+transformer! filter-new{file, enc} =
+   frag = file.path.replace{R"/content/", "/fragments/"}.replace{R".q$", ".json"}
+   try:
+      frag-stat = fs.stat-sync{frag}
+      if frag-stat.mtime.get-time{} > file.stat.mtime.get-time{}:
+         print 'Skip: {file.path}'
+         return null
+   catch e:
+      pass
+   file
+
 
 task clean:
    del{{"./fragments", "./output"}}
@@ -189,10 +201,10 @@ task template:
       @pipe{strip-to-base{}}
       @pipe{memo-template{}}
 
-
 task fragments:
    chain gulp:
       @src{paths.content}
+      @pipe{filter-new{}}
       @pipe{compile-quaint{}}
       @pipe{gulp.dest{"./fragments"}}
 
@@ -202,12 +214,19 @@ task readFragments < fragments:
       @pipe{strip-to-base{}}
       @pipe{memo-fragment{}}
 
-
-task finalize < {template, readFragments}:
+task html < {template, readFragments}:
    chain gulp:
       @src{paths.fragments}
       @pipe{fill-template{}}
       @pipe{gulp.dest{paths.output}}
+
+
+;; task watchHtml < {template, readFragments}:
+;;    chain gulp:
+;;       @src{paths.fragments}
+;;       @pipe{gulp-watch{paths.fragments}}
+;;       @pipe{fill-template{}}
+;;       @pipe{gulp.dest{paths.output}}
 
 
 task sass:
@@ -253,12 +272,13 @@ task assets:
 
 task watch:
    gulp.watch{paths.sass, {.sass}}
-   gulp.watch{paths.content, {.finalize}}
-   gulp.watch{paths.templates, {.finalize}}
+   gulp.watch{paths.content, {.html}}
+   gulp.watch{paths.templates, {.html}}
    gulp.watch{paths.eg, {.scripts}}
    gulp.watch{paths.assets, {.assets}}
 
-task make < {finalize, sass, scripts, assets}
+
+task make < {html, sass, scripts, assets}
 
 task default < make
 
