@@ -12,21 +12,12 @@ html %
     link %
        rel = stylesheet
        type = text/css
-       href = {siteroot}style/style.css
-    {
-       incl = String{doc.meta.get{.include} or ""}
-       incl.split{R" *\n *"} each
-          "" -> ""
-          R".css$"? lnk ->
-             link %
-                rel = "stylesheet"
-                type = "text/css"
-                href = if{lnk[0]=="/", siteroot + lnk.slice{1}, lnk}
-          R".js$"? script ->
-             script %
-                src = if{script[0]=="/", siteroot + script.slice{1}, script}
-    }
+       href = {
+         s = doc.meta.get{.style}??.raw{} or "style"
+         '{siteroot}style/{s}.css'
+       }
+    resources :: !dump!
 
   body %
     {body}
-
+    resources :: !run!

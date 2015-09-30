@@ -1,40 +1,37 @@
 {
   "name": "eg-doc",
+  "description": "Documentation for Earl Grey",
   "version": "0.0.0",
-  "description": "Documentation and REPL for Earl Grey",
-  "dependencies": {
-    "del": "^1.1.1",
-    "earl-gulp": ">= 0.0.1",
-    "earlgrey": ">= 0.0.1",
-    "earlgrey-runtime": ">= 0.0.3",
-    "earlify": ">= 0.0.1",
-    "end-of-stream": "^1.1.0",
-    "globby": "^2.0.0",
-    "gulp": "^3.8.11",
-    "gulp-autoprefixer": "^2.2.0",
-    "gulp-sass": "^1.3.3",
-    "gulp-sourcemaps": "^1.5.2",
-    "gulp-uglify": "^1.2.0",
-    "gulp-watch": "^4.2.4",
-    "highlight.js": "^8.5.0",
-    "jquery": "^2.1.3",
-    "quaint": ">= 0.0.2",
-    "repple": ">= 0.0.1",
-    "vinyl-buffer": "^1.0.0",
-    "vinyl-source-stream": "^1.1.0"
-  },
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
+  "author": "Olivier Breuleux",
   "repository": {
     "type": "git",
     "url": "https://github.com/breuleux/eg-doc"
   },
-  "keywords": [
-    "REPL",
-    "Earl Grey"
-  ],
-  "author": "Olivier Breuleux",
-  "license": "MIT",
+  "dependencies": {
+    "@breuleux/engage-config": ">= 0.0.2",
+    "browserify": "^11.2.0",
+    "earl-gulp": "^0.0.2",
+    "earlgrey": ">= 0.0.12",
+    "earlgrey-runtime": ">= 0.0.10",
+    "end-of-stream": "^1.1.0",
+    "globby": "^3.0.1",
+    "gulp": "^3.9.0",
+    "gulp-uglify": "^1.4.1",
+    "jquery": "^2.1.4",
+    "node-static": "^0.7.7",
+    "vinyl-buffer": "^1.0.0",
+    "vinyl-source-stream": "^1.1.0"
+  },
+  "devDependencies": {
+    "jspm": "^0.16.1"
+  },
+  "jspm": {
+    "directories": {
+      "baseURL": "content/lib",
+      "packages": "output/earl-grey/lib/jspm_packages"
+    },
+    "dependencies": {},
+    "devDependencies": {}
+  },
   "private": true
 }

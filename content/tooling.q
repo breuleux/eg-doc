@@ -1,15 +1,19 @@
 
 meta ::
-   title = Tooling
-   author = Olivier Breuleux
-   summary =
-      Tooling for Earl Grey
-   template = twocol
+  title = Tooling
+  author = Olivier Breuleux
+  summary =
+    Tooling for Earl Grey
+  template = default
 
-div#toc %
-  toc::below
+resources ::
+  toc-scroll.js
 
-div#main % [
+store sidebar ::
+  toc::
+
+js :: document.getElementById("use").className = "navlink curnav dropdown"
+
 
 [\label _@@ \url] => __[{label} @@ {url}]
 [@@! \project] => {project} _@@ https://github.com/breuleux/{project}
@@ -44,6 +48,4 @@ Also scattered.
 If you wish to __contribute syntax highlighting for a library which is
 currently not supported, please consult these
 [guidelines]_@@{siteroot}contrib.html#syntaxhighlighting.
-
-]
 

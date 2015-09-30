@@ -1,14 +1,19 @@
 
 meta ::
-   title = Contributing to Earl Grey
-   author = Olivier Breuleux
-   summary =
-      Contributing to Earl Grey
-   template = twocol
+  title = Contributing to Earl Grey
+  author = Olivier Breuleux
+  summary =
+    Contributing to Earl Grey
+  template = default
 
-div#toc %
-  toc::below
-div#main % [
+resources ::
+  toc-scroll.js
+
+store sidebar ::
+  toc::
+
+js :: document.getElementById("use").className = "navlink curnav dropdown"
+
 
 [\label _@@ \url] => __[{label} @@ {url}]
 [@@! \project] => {project} _@@ https://github.com/breuleux/{project}
@@ -225,5 +230,3 @@ Some features not found in the REPL (I'm lazy) but recommended:
   of all the other lines, so e.g. if the second line is indented 5
   more than the first, this remains true.
 
-
-]

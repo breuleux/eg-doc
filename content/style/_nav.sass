@@ -1,0 +1,160 @@
+
+@import util
+
+html
+  height: 100%
+
+body
+  @include column
+  font-family: 'Open Sans', sans-serif
+  font-size: $font-size
+  height: 100%
+  margin: 0px
+  color: #333
+
+#nav-container
+  background-color: #eee
+  #nav
+    @include rownav
+    height: $header-height
+
+#main-container
+  flex-grow: 1
+  #main
+    @include block
+    padding-top: 10px
+    padding-bottom: 10px
+
+#foot-container
+  background-color: #eee
+  #foot
+    @include rownav
+    color: white
+    height: $footer-height
+
+#sidebar
+  position: fixed
+  left: 0px
+  top: 0px
+  height: 100%
+  padding-top: $header-height
+  padding-bottom: $footer-height
+  width: $sidebar-width
+  box-sizing: border-box
+  #sidebar-contents
+    position: relative
+    height: 100%
+    overflow: auto
+
+@media screen and (max-width: $main-width+$sidebar-width+100px)
+  #sidebar
+    display: none
+
+
+#nav
+  /* display: flex
+  /* flex-direction: row
+  /* justify-content: flex-start
+  /* align-items: center
+  /* height: $nav-height
+  font-family: $header-font
+
+  img
+    vertical-align: middle
+
+  .navlink
+    box-sizing: border-box
+    position: relative
+    height: $header-height
+    line-height: $header-height
+    vertical-align: middle
+    border-bottom: $header-border solid transparent
+    font-size: 20pt
+    text-align: center
+
+  .navlink:hover
+    border-bottom: $header-border solid black
+
+  .navlink a
+    padding-left: 20px
+    padding-right: 20px
+    display: inline-block
+    font-weight: bold
+    text-decoration: none
+    color: black
+
+  .curnav.navlink
+    background-color: #ddd
+    border-bottom: $header-border solid transparent
+
+  .curnav:after
+    position: absolute
+    top: $header-height
+    left: 50%
+    margin-left: -40px
+    content: ''
+    width: 0
+    height: 0
+    border-top: solid 25px #ddd
+    /* border-top: solid 25px black
+    border-left: solid 40px transparent
+    border-right: solid 40px transparent
+
+  .curnav.navlink:hover
+    border-bottom: $header-border solid transparent
+
+  .navlink a:focus
+    outline: none
+
+  .navlink a:hover
+    text-decoration: none
+
+  #social
+    display: flex
+    flex-direction: row
+    flex: 1
+    justify-content: flex-end
+    .navlink a
+      padding-left: 5px
+      padding-right: 5px
+      width: 50px
+
+
+/* STUFF */
+
+.nosel
+  user-select: none
+
+.dropdown
+  position: relative
+
+.dropdown ul
+  position: absolute
+  list-style-type: none
+  margin: 0px
+  padding: 0px
+  overflow: hidden
+
+  /* width: 150px
+  visibility: hidden
+
+  background-color: #ccc
+  li
+    font-size: 14pt
+    text-align: left
+    padding-left: 10px
+    line-height: 1.5em
+    border-bottom: 2px solid black
+  li:hover
+    background-color: #ddd
+
+.dropdown:hover ul
+  z-index: 100000
+  visibility: visible
+
+#nav .dropdown ul a
+  width: 100%
+  padding-left: 10px
+  text-decoration: none
+  color: black
+

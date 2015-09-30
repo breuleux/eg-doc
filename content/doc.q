@@ -1,18 +1,20 @@
 
 meta ::
-   title = Earl Grey documentation
-   author = Olivier Breuleux
-   summary =
-      Documentation of the Earl Grey language.
-   template = twocol
+  title = Earl Grey documentation
+  author = Olivier Breuleux
+  summary =
+    Documentation of the Earl Grey language.
+  template = default
 
-div#toc %
-  js :: //document.getElementById("doc").className = "navlink curnav"
-  toc::below
-div#main % [
+resources ::
+  toc-scroll.js
+
+store sidebar ::
+  toc::
+
+js :: document.getElementById("use").className = "navlink curnav dropdown"
 
 = Basic syntax
-
 
 == Comments
 
@@ -1346,9 +1348,3 @@ div.note %
   macro was to build the expression `[`func ^x`]. __[It is usually
   safest] to use `[@env] because it refers to the macro call itself,
   so unintended interference is rather unlikely.
-
-
-
-]
-
-

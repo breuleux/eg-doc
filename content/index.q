@@ -14,7 +14,7 @@ js :: document.getElementById("logo").className = "navlink curnav"
 [\maybe\text @@@ \maybe\path] => {text}@@{siteroot}{path}
 
 __[Earl Grey] is a neat little language that compiles to
-JavaScript. Here's what it has to offer: ZZZ
+JavaScript. Here's what it has to offer:
 
 * [Concise and streamlined syntax _@@ #whatdoesitlooklike] inspired
   by the Python language.
@@ -95,7 +95,7 @@ development:
 
 * __Emacs: @@!earl-grey-mode
 
-* __Atom: in development :\)
+* __Atom: language-earl-grey @@ //atom.io/packages/language-earl-grey
 
 
 

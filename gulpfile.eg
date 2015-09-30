@@ -1,245 +1,56 @@
 
-require:
-   "earlgrey/5" as eg
-   "earlgrey/lib5/util" -> GenSym
-   "earlgrey/lib5/expand" ->
-      Scope, topscope
-   quaint ->
-      create as _create, QAst
-      tools
-   earl-gulp ->
-      transformer
-   gulp
-   gulp-sass
-   path
-   fs
-   del as _del
-   gulp-sourcemaps
-   gulp-uglify
-   gulp-autoprefixer
-   gulp-watch
-   vinyl-source-stream
-   vinyl-buffer
-   globby
-   end-of-stream
-   "highlight.js" as hljs
-   "./hl"
-
-
 require-macros:
    earl-gulp -> task
 
+require:
+   @breuleux/engage-config
+   node-static
+   gulp
+   http
 
-gensym = GenSym{"$eg$"}
+   path
+   "globby" -> sync as globby
+   vinyl-source-stream
+   vinyl-buffer
+   gulp-uglify
+   promisify! end-of-stream
 
-glob = promisify{globby}
-eos = promisify{end-of-stream}
-del = promisify{_del}
+
+
+opts = {
+   hostname = "http://breuleux.github.io"
+   root = "/earl-grey/"
+   assets-root = "/earl-grey/assets/"
+   default-language = "earlgrey"
+   default-extension = ".html"
+   default-image-extension = ".png"
+   server-port = "3005"
+}
+
+task make:
+   engage-config{opts}.start{}
+
+task serve:
+   s = new node-static.Server{"./output"}
+   http.create-server{f}.listen{opts.server-port} where f{req, res} =
+      req.add-listener{.end, f}.resume{} where f{} =
+         s.serve{req, res}
+   print 'Listening on port {opts.server-port}'
 
 
 paths = {
-   output = "./output/earl-grey"
-   templates = "./template/**/*.q"
-   content = "./content/**/*.q"
-   fragments = "./fragments/**/*.json"
-   sass = "./content/**/*.sass"
-   eg = {"./content/**/*.eg", "!./content/lib/eg.eg"}
-   expensive = "./content/lib/eg.eg"
-   assets = {
-      "png", "svg", "json", "css", "txt", "qdat", "eg"
-   } each ext -> './content/**/*.{ext}'
+   examples-in = "./examples/**/*.eg"
+   examples-out = './output{opts.root}examples'
+
+   eg-in = {"./lib/**/*.eg", "!./lib/eg.eg"}
+   eg2-in = "./lib/eg.eg"
+   eg-out = './output{opts.root}'
 }
-
-
-class EGEvaluator:
-   constructor{@glob, @gene, @ev, @scope} =
-      pass
-   eval{text, env = {=}, loc = null} =
-      if env == {=}:
-         let code = @gene.generate{eg.Source{text, "<repl>"}, {scope = @scope}}
-         @ev{code.code}
-      else:
-         f = @fork{}
-         items{env} each {k, v} ->
-            f.setenv{k, v}
-         f.eval{text, {=}, loc}
-   setenv{key, value} =
-      mangled = gensym{key}
-      @gene.env.bind{@scope, key, #variable{mangled}}
-      @glob[mangled] = value
-   fork{} =
-      EGEvaluator{@glob, @gene, @ev, Scope{@scope}}
-
-create{} =
-   globvar = gensym{.global}
-   let glob = global ;;Object.create{global}
-   gene = eg.Generator with {
-      interactive = true
-      globvar = globvar
-      es5 = true
-      noboil = true
-   }
-   ev = eg.evaluator with {
-      globvar = globvar
-      global = glob
-      filename = "<repl>"
-      showname = "<repl>"
-      cwd = "<repl>"
-   }
-
-   _create with {@} ->
-      env = @evaluator.store
-      @evaluator = EGEvaluator{glob, gene, ev, topscope}
-      @setenv with {
-         siteroot = "/earl-grey/"
-      }
-      @register-rule with {
-         "\\maybe\\lang & \\body"{engine, {=> lang, => body}} =
-            code = tools.dedent{tools.raw-relative{body}.replace{R"^ *\n", ""}}
-            langstr = match lang.raw{}:
-               "" -> "earlgrey"
-               x -> x
-            hl = {}
-            pre.hl[raw] % hljs.highlight{langstr, code}.value
-      }
-      items{env} each {k, v} -> @evaluator.setenv{k, v}
-
-
-
-compile{q, text} =
-   res = q.translate{text, .html}
-   metadata = object with q.documents.meta.entries{} each {k, v} ->
-      newv =
-         match v:
-            QAst? ->
-               match create{}.translate{v, .enode}:
-                  [top %]? {children => match} ->
-                     {x} -> x
-                     xs -> xs
-                  other -> other
-            else -> v
-      {k, newv}
-   metadata.contents = raw % res
-   metadata
-
-transformer! compile-quaint{file, enc} =
-   p = file.path
-   relp = getBase{file} + ".q"
-   print 'Compile: {p}'
-   q = create{}
-   file.path = p.replace{R".q$", ".json"}
-   metadata = compile{q, file.contents.to-string{}}
-   metadata.path = relp
-   file.contents = new Buffer{JSON.stringify{metadata}}
-   file
-
-templatize{match data, p} =
-   {template => "none"} ->
-      data.contents
-   else ->
-      String! tplname = data.template or .default
-      tpl = templates[tplname]
-      if not tpl:
-         throw E.no_template{'could not find template "{tplname}" to compile {p}'}
-      q = create{}
-      items{data} each {k, v} ->
-         q.documents.meta.set{k, v}
-      q.documents.meta.set{.template, .none}
-      q.documents.fragments = fragments
-      q.setenv{.body, top % data.contents}
-      metadata = compile{q, tpl}
-      templatize{metadata, p}
-
-transformer! fill-template{file, enc} =
-   p = file.path
-   data = fragments[get-base{file}]
-   res = templatize{data, p}.children[0]
-   print 'Templatize: {p}'
-   file.path = p.replace{R".json$", ".html"}
-   file.contents = new Buffer{res}
-   file
-
-
-get-base{file} =
-   file.path.slice{file.base.length}.replace{R".[^.]+$", ""}
-
-transformer! strip-to-base{file, enc} =
-   {get-base{file}
-    file.contents.toString{}}
-
-templates = {=}
-transformer! memo-template{{p, contents}, enc} =
-   templates[p] = contents
-   null
-
-fragments = {=}
-transformer! memo-fragment{{p, contents}, enc} =
-   fragments[p] = object with
-      items{JSON.parse{contents}} each {k, v} ->
-         {k, ENode.fromObject{v}}
-   null
-
-transformer! filter-new{file, enc} =
-   frag = file.path.replace{R"/content/", "/fragments/"}.replace{R".q$", ".json"}
-   try:
-      frag-stat = fs.stat-sync{frag}
-      if frag-stat.mtime.get-time{} > file.stat.mtime.get-time{}:
-         print 'Skip: {file.path}'
-         return null
-   catch e:
-      pass
-   file
-
-
-task clean:
-   del{{"./fragments", "./output"}}
-
-
-task template:
-   chain gulp:
-      @src{paths.templates}
-      @pipe{strip-to-base{}}
-      @pipe{memo-template{}}
-
-task fragments:
-   chain gulp:
-      @src{paths.content}
-      @pipe{filter-new{}}
-      @pipe{compile-quaint{}}
-      @pipe{gulp.dest{"./fragments"}}
-
-task readFragments < fragments:
-   chain gulp:
-      @src{paths.fragments}
-      @pipe{strip-to-base{}}
-      @pipe{memo-fragment{}}
-
-task html < {template, readFragments}:
-   chain gulp:
-      @src{paths.fragments}
-      @pipe{fill-template{}}
-      @pipe{gulp.dest{paths.output}}
-
-
-;; task watchHtml < {template, readFragments}:
-;;    chain gulp:
-;;       @src{paths.fragments}
-;;       @pipe{gulp-watch{paths.fragments}}
-;;       @pipe{fill-template{}}
-;;       @pipe{gulp.dest{paths.output}}
-
-
-task sass:
-   chain gulp:
-      @src{paths.sass}
-      @pipe{gulp-sass{indented-syntax = true}}
-      @pipe{gulp-autoprefixer{browsers = {"last 2 versions"}, cascade = false}}
-      @pipe{gulp.dest{paths.output}}
 
 async script-task{p, opts} =
    require:
       earlify, browserify
-   files = await glob{p}
+   files = await globby{p}
    await all files each file ->
       b = browserify with {
          entries = {file}
@@ -254,31 +65,21 @@ async script-task{p, opts} =
          @pipe{vinyl-source-stream{target}}
          @pipe{vinyl-buffer{}}
          if{opts.uglify, @pipe{gulp-uglify{}}, @}
-         @pipe{gulp.dest{paths.output}}
-         eos{@}
+         @pipe{gulp.dest{paths.eg-out}}
+         end-of-stream{@}
 
 task scripts:
-   script-task{paths.eg, externals = "eg", uglify = true}
+   script-task{paths.eg-in, externals = "eg", uglify = true}
 
 task scripts2:
-   script-task{paths.expensive, uglify = true}
+   script-task{paths.eg2-in, uglify = true}
 
-task assets:
+task examples:
    chain gulp:
-      @src{paths.assets}
-      @pipe{gulp.dest{paths.output}}
+      @src{paths.examples-in}
+      @pipe{gulp.dest{paths.examples-out}}
 
 
 
-task watch:
-   gulp.watch{paths.sass, {.sass}}
-   gulp.watch{paths.content, {.html}}
-   gulp.watch{paths.templates, {.html}}
-   gulp.watch{paths.eg, {.scripts}}
-   gulp.watch{paths.assets, {.assets}}
 
-
-task make < {html, sass, scripts, assets}
-
-task default < make
-
+task default < {make, serve}

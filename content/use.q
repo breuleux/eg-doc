@@ -1,18 +1,21 @@
 
 meta ::
-   title = Earl Grey documentation
-   author = Olivier Breuleux
-   summary =
-      Install and use
-   template = twocol
+  title = Earl Grey documentation
+  author = Olivier Breuleux
+  summary =
+    Install and use
+  template = default
+
+resources ::
+  toc-scroll.js
+
 
 [\label _@@ \url] => __[{label} @@ {url}]
 
+store sidebar ::
+  toc::
 
-div#toc %
-  js :: //document.getElementById("use").className = "navlink curnav dropdown"
-  toc::below
-div#main % [
+js :: document.getElementById("use").className = "navlink curnav dropdown"
 
 = Install
 
@@ -272,4 +275,3 @@ if you wish to contribute tools for popular editors or libraries.
 * See the [documentation _@@ {siteroot}doc.html] for an overview of
   all of EG's features.
 
-]

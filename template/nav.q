@@ -4,7 +4,7 @@ meta :: template = boilerplate
 logo =>
   img %
     src = {siteroot}assets/earlgrey-text.svg
-    height = 70px
+    height = 60px
     alt = Earl Grey
 github =>
   img %
@@ -21,17 +21,22 @@ twitter =>
 
 repo => https://github.com/breuleux/earl-grey
 
-[\maybe\text @@@ \maybe\path] => {text}@@{siteroot}{path}
+div#sidebar %
+  div#sidebar-contents %
+    store sidebar :: dump!
 
 div#nav-container.container %
   div#nav %
-    div#logo.navlink % {logo} @@@
+    div#logo.navlink % {logo} @@@ index
     div.navlink.dropdown #use %
-      span % learn @@@ use.html
-      * Install @@@ use.html
-      * Documentation @@@ doc.html
-      * Tooling @@@ tooling.html
-      * Contribute @@@ contrib.html
+      span % learn @@@ use
+      * Install @@@ use
+      * Documentation @@@ doc
+      * Tooling @@@ tooling
+      * Contribute @@@ contrib
+    div.navlink.dropdown #posts-nav %
+      span % posts @@@ posts/index
+      * Install @@@ posts/one
     div.navlink #repl % try it! @@@ repl
     div #social %
        div.navlink #source % {github} @@ {repo}
@@ -41,4 +46,4 @@ div#nav-container.container %
 
 div#foot-container.container %
   div#foot %
-    .footlink % []
+    []
