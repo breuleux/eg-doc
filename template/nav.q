@@ -34,7 +34,7 @@ div#nav-container.container %
       * Documentation @@@ doc
       * Tooling @@@ tooling
       * Contribute @@@ contrib
-    div.navlink.dropdown #posts-nav %
+    ;; div.navlink.dropdown #posts-nav %
       span % posts @@@ posts/index
       * Install @@@ posts/one
     div.navlink #repl % try it! @@@ repl

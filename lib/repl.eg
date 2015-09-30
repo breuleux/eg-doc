@@ -8,6 +8,7 @@ require:
    quaint ->
       tools, create
       Text, Oper, Seq
+      Into
 
 provide:
    setup
@@ -242,10 +243,10 @@ class Cards:
 
 async populate-cards{plugin, manifest} =
    async populate{filename} =
-      contents = await fget{'doc/{filename}'}
+      contents = await fget{'qdoc/{filename}'}
       q = create{plugin}
       q.run{contents}
-   filenames = [await fget{'doc/{manifest}'}].split{"\n"}
+   filenames = [await fget{'qdoc/{manifest}'}].split{"\n"}
    await all
       filenames each filename when filename -> populate{filename}
 
@@ -278,11 +279,11 @@ class ReplPlugin:
 
    install-to{eng} =
 
-      eng.register-document with {
+      eng.register-documents with {
          cards = @cards
       }
 
-      eng.register-rule with {
+      eng.register-rules with {
 
          "\\maybe\\label / \\code"{engine, {label => match, => code}} =
             #text{""} ->
@@ -314,13 +315,12 @@ class ReplPlugin:
                   doc =
                      engine.translate{tools.shedIndent{contents}, .enode} with
                         {paragraph = true}
-               genfor %
-                  document = "cards"
-                  {name = tools.raw{tag}
-                   descr = engine.translate{descr, .enode}
-                   doc = doc
-                   code = code}
-
+               Into{.cards} with {
+                  name = tools.raw{tag}
+                  descr = engine.translate{descr, .enode}
+                  doc = doc
+                  code = code
+               }
       }
 
 
