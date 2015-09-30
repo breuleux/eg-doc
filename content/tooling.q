@@ -1,10 +1,11 @@
 
+template :: default
+
 meta ::
   title = Tooling
   author = Olivier Breuleux
   summary =
     Tooling for Earl Grey
-  template = default
 
 resources ::
   toc-scroll.js

@@ -1,10 +1,11 @@
 
+template :: default
+
 meta ::
    title = Earl Grey
    author = Olivier Breuleux
    summary =
       Introduction to the Earl Grey language.
-   template = default
 
 
 js :: document.getElementById("logo").className = "navlink curnav"

@@ -1,10 +1,11 @@
 
+template :: default
+
 meta ::
   title = Earl Grey documentation
   author = Olivier Breuleux
   summary =
     Install and use
-  template = default
 
 resources ::
   toc-scroll.js

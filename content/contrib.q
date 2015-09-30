@@ -1,10 +1,11 @@
 
+template :: default
+
 meta ::
   title = Contributing to Earl Grey
   author = Olivier Breuleux
   summary =
     Contributing to Earl Grey
-  template = default
 
 resources ::
   toc-scroll.js

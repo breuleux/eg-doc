@@ -1,5 +1,5 @@
 
-meta :: template = boilerplate
+template :: boilerplate
 
 logo =>
   img %
@@ -27,17 +27,17 @@ div#sidebar %
 
 div#nav-container.container %
   div#nav %
-    div#logo.navlink % {logo} @@@ index
+    div#logo.navlink % {logo} @@@ index.html
     div.navlink.dropdown #use %
-      span % learn @@@ use
-      * Install @@@ use
-      * Documentation @@@ doc
-      * Tooling @@@ tooling
-      * Contribute @@@ contrib
+      span % learn @@@ use.html
+      * Install @@@ use.html
+      * Documentation @@@ doc.html
+      * Tooling @@@ tooling.html
+      * Contribute @@@ contrib.html
     ;; div.navlink.dropdown #posts-nav %
-      span % posts @@@ posts/index
+      span % posts @@@ posts/index.html
       * Install @@@ posts/one
-    div.navlink #repl % try it! @@@ repl
+    div.navlink #repl % try it! @@@ repl.html
     div #social %
        div.navlink #source % {github} @@ {repo}
        div.navlink #twitter % {twitter} @@ https://twitter.com/earlgreylang
