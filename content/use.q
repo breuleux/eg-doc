@@ -22,21 +22,18 @@ js :: document.getElementById("use").className = "navlink curnav dropdown"
 
 First you will need to install:
 
-* iojs_@@{iojs}, which is a fork of node.js with support for ES6.
-  div.note %
-    If you have `node installed, you can use the `earl5 command instead
-* npm_@@{npm}, the package manager for node/iojs
+* node_@@{node} (with version >= 4.0)
+* npm_@@{npm}, the package manager for node
 
-iojs => https://iojs.org/en/index.html
+node => https://nodejs.org/
 npm => https://www.npmjs.com/
 
-Once `iojs and `npm are installed, run:
+Once `node and `npm are installed, run:
 
 bash &    npm install -g earlgrey
 
-This will install the `earl command. Run `earl (or `earl5 if you don't
-have `iojs installed) with no arguments to start an interactive
-interpreter, or run an EG program as:
+This will install the `earl command. Run `earl with no arguments to
+start an interactive interpreter, or run an EG program as:
 
 bash &    earl run file.eg
 

@@ -78,8 +78,7 @@ You can read more about EG's many features in the
 == Compatible
 
 One of EG's primary goals is to be as compatible as possible with
-existing JavaScript libraries and frameworks and the node/iojs
-ecosystem.
+existing JavaScript libraries and frameworks and the node ecosystem.
 
 Any package in npm's wide selection can thus be imported and used
 without issue. The same goes for jQuery, canvas/SVG libraries, or
