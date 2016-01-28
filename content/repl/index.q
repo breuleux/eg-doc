@@ -1,4 +1,6 @@
 
+template :: default
+
 meta ::
    title = Try Earl Grey!
    author = Olivier Breuleux
@@ -10,7 +12,6 @@ meta ::
       /repl/repl.js
       /repl/style/repl.css
       /repl/style/codemirror.css
-   template = default
 
 div #box %
   div #interactive %

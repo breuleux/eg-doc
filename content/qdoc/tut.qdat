@@ -4,7 +4,7 @@
   | `Enter or `[Ctrl-Enter]             | Evaluate an expression
   | `[Shift-Enter]                      | Insert a new line
   | `[Up/Down] or `[Ctrl-Up/Ctrl-Down]  | Navigate history
-  | `[Control-L]                        | Clear the screen
+  | `[Ctrl-L]                           | Clear the screen
 
   Alright, so you have stumbled upon this page for some reason.
 
@@ -201,7 +201,7 @@
   mutable variable.
 
   C-style `for loops are available, if for some reason you want to use
-  them, but they require commas instead of semicolons:
+  them:
 
   / for (var i = 10; i >= 0; i--): print i
 
