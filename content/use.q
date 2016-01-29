@@ -7,7 +7,7 @@ meta ::
   summary =
     Install and use
 
-resources ::
+;; resources ::
   toc-scroll.js
 
 
@@ -258,18 +258,18 @@ regular expressions, for example:
 
 = Tooling support
 
-Click here @@ {siteroot}tooling.html
+Click here @@@ tooling.html
 for details about current support for editors and syntax highlighting.
 
-Read this @@ {siteroot}contrib.html
+Read this @@@ contrib.html
 if you wish to contribute tools for popular editors or libraries.
 
 
 = Learn more
 
-* Go through the [interactive tutorial _@@ {siteroot}repl]. It
+* Go through the [interactive tutorial _@@ repl.html]. It
   runs in your browser, no need to install anything!
 
-* See the [documentation _@@ {siteroot}doc.html] for an overview of
+* See the [documentation _@@ doc.html] for an overview of
   all of EG's features.
 

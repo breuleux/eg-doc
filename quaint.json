@@ -1,0 +1,108 @@
+{
+  "sources": [
+    "**/*.q"
+  ],
+  "dataFiles": [],
+  "data": {},
+  "plugins": {
+    "look-nice": {
+      "useNav": true,
+      "extra": "style/egdoc.sass",
+      "fonts": {
+        "body": "g:Open Sans",
+        "nav": "g:Mate SC",
+        "header": "g:Mate SC",
+        "title": "$font-header",
+        "pre": "Monospace",
+        "code": "$font-pre"
+      },
+      "font-sizes": {
+        "body": "19px",
+        "nav": "$font-size-body",
+        "dropdown": "$font-size-body",
+        "caret": "$font-size-nav * 0.8"
+      },
+      "borders": {
+        "nav": "0px solid darken($background-nav, 20%)",
+        "nav-dropdown": "10px solid $background-nav-dropdown"
+      },
+      "widths": {
+        "body": "970px",
+        "nav": "$width-body + 2 * $padding-body"
+      },
+      "paddings": {
+        "body": "10px",
+        "nav": "$padding-body",
+        "td": "5px"
+      },
+      "backgrounds": {
+        "body": "#fafafa",
+        "nav": "#eee",
+        "nav-select": "tweak($background-nav, 20%)",
+        "nav-dropdown": "tweak($background-nav, 10%)",
+        "nav-dropdown-select": "tweak($background-nav-dropdown, 10%)",
+        "pre": "$background-body",
+        "code": "$background-body",
+        "table": "#fff",
+        "table-odd": "#fff",
+        "table-header": "#000"
+      },
+      "colors": {
+        "body": "#333",
+        "nav": "bwtext($background-nav)",
+        "nav-select": "bwtext($background-nav-select)",
+        "nav-dropdown": "bwtext($background-nav-dropdown)",
+        "nav-dropdown-select": "bwtext($background-nav-dropdown-select)",
+        "link": "contrasting($background-body, #aaf, #00f)",
+        "link-visited": "contrasting($background-body, #f8f, #808)",
+        "pre": "bwtext($background-pre)",
+        "code": "bwtext($background-code)",
+        "table": "bwtext($background-table)",
+        "table-odd": "bwtext($background-table-odd)",
+        "table-header": "bwtext($background-table-header)",
+        "header": "$color-body",
+        "title": "$color-header"
+      }
+    },
+    "highlight": {
+      "theme": "xcode",
+      "defaultBlock": "earlgrey",
+      "defaultInline": null
+    }
+  },
+  "inject": [],
+  "contentRoot": "content",
+  "output": "output",
+  "format": "html",
+  "templates": {
+    "default": "@minimal",
+    "root": "templates"
+  },
+  "resources": {
+    "root": "resources",
+    "inline": false,
+    "files": {},
+    "url": "resources"
+  },
+  "meta": {
+    "file": null,
+    "sortBy": "title"
+  },
+  "watch": true,
+  "hostname": "http://breuleux.github.io",
+  "siteRoot": "earl-grey/",
+  "server": {
+    "enable": true,
+    "delay": 300,
+    "port": 9137,
+    "startPage": "index.html",
+    "openBrowser": true
+  },
+  "verbose": false,
+  "files": [
+    "assets"
+  ],
+  "nominalOutput": "output/earl-grey/",
+  "_configFile": "quaint.json",
+  "_configExists": true
+}

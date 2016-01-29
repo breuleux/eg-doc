@@ -4,15 +4,12 @@ template :: default
 meta ::
    title = Earl Grey
    author = Olivier Breuleux
-   summary =
-      Introduction to the Earl Grey language.
+   summary = Introduction to the Earl Grey language.
 
-
-js :: document.getElementById("logo").className = "navlink curnav"
+;; js :: document.getElementById("logo").className = "navlink curnav"
 
 [\label _@@ \url] => __[{label} @@ {url}]
 [@@! \project] => {project} _@@ https://github.com/breuleux/{project}
-[\maybe\text @@@ \maybe\path] => {text}@@{siteroot}{path}
 
 __[Earl Grey] is a neat little language that compiles to
 JavaScript. Here's what it has to offer:
@@ -95,7 +92,7 @@ development:
 
 * __Emacs: @@!earl-grey-mode
 
-* __Atom: language-earl-grey @@ //atom.io/packages/language-earl-grey
+* __Atom: language-earl-grey _@@ //atom.io/packages/language-earl-grey
 
 
 

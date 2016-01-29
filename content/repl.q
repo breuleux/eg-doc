@@ -1,5 +1,5 @@
 
-template :: nav
+template :: @nav
 
 meta ::
   title = Try Earl Grey!
@@ -13,7 +13,7 @@ meta ::
     /repl/style/repl.css
     /repl/style/codemirror.css
 
-resources ::
+;; resources ::
   //jspm.io/system@0.16.js
   eg.js
   repl.js

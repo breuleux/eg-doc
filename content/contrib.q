@@ -7,7 +7,7 @@ meta ::
   summary =
     Contributing to Earl Grey
 
-resources ::
+;; resources ::
   toc-scroll.js
 
 store sidebar ::
@@ -15,10 +15,16 @@ store sidebar ::
 
 js :: document.getElementById("use").className = "navlink curnav dropdown"
 
+css ::
+  code.hlinline {
+    background: #f5f5ec;
+    padding: 3px;
+  }
+
 
 [\label _@@ \url] => __[{label} @@ {url}]
 [@@! \project] => {project} _@@ https://github.com/breuleux/{project}
-[\maybe\text @@@ \maybe\path] => {text}@@{siteroot}{path}
+;; [\maybe\text @@@ \maybe\path] => {text}@@{siteroot}{path}
 
 
 = Contribute to Earl Grey

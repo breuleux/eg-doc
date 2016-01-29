@@ -7,7 +7,7 @@ meta ::
   summary =
     Documentation of the Earl Grey language.
 
-resources ::
+;; resources ::
   toc-scroll.js
 
 store sidebar ::
@@ -1191,7 +1191,7 @@ The syntax goes like this:
 The expression is the AST of the argument given to the macro call and
 it is determined like this:
 
-+ Situation               + Value of `expression
++ Situation               + Value of expression
 | `macro-name(x)          | `[`{x}`]
 | `macro-name{x}          | `[`{x}`]
 | `macro-name(x, y)       | `[`{x, y}`]
