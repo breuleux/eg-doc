@@ -11,9 +11,10 @@ meta ::
   toc-scroll.js
 
 
+
 [\label _@@ \url] => __[{label} @@ {url}]
 
-store sidebar ::
+nav side ::
   toc::
 
 js :: document.getElementById("use").className = "navlink curnav dropdown"

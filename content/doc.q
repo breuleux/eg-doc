@@ -7,10 +7,8 @@ meta ::
   summary =
     Documentation of the Earl Grey language.
 
-;; resources ::
-  toc-scroll.js
 
-store sidebar ::
+nav side ::
   toc::
 
 js :: document.getElementById("use").className = "navlink curnav dropdown"
@@ -115,7 +113,7 @@ Global variables need to be declared to be accessible:
        document, google, React
 
 
-== Literals and data structures
+== Data
 
 === Strings
 

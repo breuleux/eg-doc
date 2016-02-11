@@ -7,10 +7,7 @@ meta ::
   summary =
     Contributing to Earl Grey
 
-;; resources ::
-  toc-scroll.js
-
-store sidebar ::
+nav side ::
   toc::
 
 js :: document.getElementById("use").className = "navlink curnav dropdown"

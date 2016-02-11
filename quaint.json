@@ -7,7 +7,7 @@
   "plugins": {
     "look-nice": {
       "useNav": true,
-      "extra": "style/egdoc.sass",
+      "useSide": true,
       "fonts": {
         "body": "g:Open Sans",
         "nav": "g:Mate SC",
@@ -26,9 +26,13 @@
         "nav": "0px solid darken($background-nav, 20%)",
         "nav-dropdown": "10px solid $background-nav-dropdown"
       },
+      "heights": {
+        "nav": "70px"
+      },
       "widths": {
         "body": "970px",
-        "nav": "$width-body + 2 * $padding-body"
+        "nav": "$width-body + 2 * $padding-body",
+        "side": "300px"
       },
       "paddings": {
         "body": "10px",
@@ -68,7 +72,8 @@
       "theme": "xcode",
       "defaultBlock": "earlgrey",
       "defaultInline": null
-    }
+    },
+    "repple": {}
   },
   "inject": [],
   "contentRoot": "content",
@@ -81,7 +86,9 @@
   "resources": {
     "root": "resources",
     "inline": false,
-    "files": {},
+    "files": {
+      "style.sass": "style/egdoc.sass"
+    },
     "url": "resources"
   },
   "meta": {
