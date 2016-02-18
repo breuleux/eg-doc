@@ -35,9 +35,4 @@ nav ::
 nav ::
   * inherit.github-badge % {github} @@ {repo}
   * inherit.twitter-badge % {twitter} @@ https://twitter.com/earlgreylang
-
 {body}
-
-;; div#main-container.container %
-  div#main %
-    {body}
