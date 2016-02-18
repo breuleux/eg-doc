@@ -2,6 +2,7 @@ template :: @nav
 logo =>
   inherit %
     height = 60px
+    width = 284px
     alt = Earl Grey
     @@@image:assets/earlgrey-text.svg
 github =>
