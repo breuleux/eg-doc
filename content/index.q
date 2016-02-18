@@ -6,7 +6,7 @@ meta ::
    author = Olivier Breuleux
    summary = Introduction to the Earl Grey language.
 
-;; js :: document.getElementById("logo").className = "navlink curnav"
+js :: document.querySelector("#nav-main > ul > :nth-child(1)").className = "curnav arrow"
 
 [\label _@@ \url] => __[{label} @@ {url}]
 [@@! \project] => {project} _@@ https://github.com/breuleux/{project}

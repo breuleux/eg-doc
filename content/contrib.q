@@ -10,7 +10,7 @@ meta ::
 nav side ::
   toc::
 
-js :: document.getElementById("use").className = "navlink curnav dropdown"
+js :: document.querySelector("#nav-main > ul > :nth-child(4)").className = "dropdown curnav"
 
 css ::
   code.hlinline {

@@ -13,8 +13,7 @@ meta ::
 store sidebar ::
   toc::
 
-js :: document.getElementById("use").className = "navlink curnav dropdown"
-
+js :: document.querySelector("#nav-main > ul > :nth-child(4)").className = "dropdown curnav"
 
 [\label _@@ \url] => __[{label} @@ {url}]
 [@@! \project] => {project} _@@ https://github.com/breuleux/{project}

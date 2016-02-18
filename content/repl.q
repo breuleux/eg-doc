@@ -10,6 +10,7 @@ resources ::
   style/repl.sass
   https://jspm.io/system@0.19.js
 
+js :: document.querySelector("#nav-main > ul > :nth-child(5)").className = "curnav arrow"
 
 inherit.cool#cool-arith % &
   ;; Look! I'm redefining addition! (locally)
