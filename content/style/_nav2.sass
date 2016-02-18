@@ -46,3 +46,54 @@ li.spacer0
   img
     margin-top: 5px
 
+
+$header-border: 5px
+
+.nav-container-desktop .dropdown:hover
+  background-color: #eee
+
+.nav-container-desktop .dropdown.curnav:hover
+  background-color: #ddd
+
+#nav-main > ul > li.curnav > :first-child:hover
+  background: #ddd
+
+#nav-main > ul > li.curnav:hover
+  border-bottom: $header-border solid #ddd
+
+#nav-main > ul > li
+  position: relative
+
+.curnav, .curnav:hover
+  background-color: #ddd
+  border-bottom: $header-border solid #ddd
+
+.curnav.arrow:after
+  position: absolute
+  top: 100%
+  left: 50%
+  margin-left: -40px
+  content: ''
+  width: 0
+  height: 0
+  border-top: solid 25px #ddd
+  border-left: solid 40px transparent
+  border-right: solid 40px transparent
+
+.nav-container-mobile, .nav-mobile
+  height: 100px
+
+.nav-mobile
+  line-height: 100px
+  ul
+    justify-content: center
+    width: 100%
+    #logo img
+      height: 70px
+      padding: 15px
+      margin-left: -100px
+
+.spacer1
+  flex-grow: 1
+
+

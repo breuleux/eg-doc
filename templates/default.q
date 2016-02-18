@@ -17,11 +17,13 @@ twitter =>
     alt = @earlgreylang
     @@@image:assets/twitter.png
 repo => https://github.com/breuleux/earl-grey
-nav ::
+nav main|mobile ::
   * [#logo % {logo}] @@@ index.html
 nav ::
   li.spacer0 %
-nav ::
+nav mobile-menu ::
+  * home @@@ index.html
+nav main|mobile-menu ::
   * [learn @@@ use.html]
     * Install @@@ use.html
     * Documentation @@@ doc.html
