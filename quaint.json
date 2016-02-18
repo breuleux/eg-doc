@@ -87,7 +87,7 @@
     "root": "resources",
     "inline": false,
     "files": {
-      "style.sass": "style/egdoc.sass"
+      "style.sass": "style/style.sass"
     },
     "url": "resources"
   },
