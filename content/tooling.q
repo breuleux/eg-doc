@@ -16,8 +16,8 @@ store sidebar ::
 js :: document.querySelector("#nav-main > ul > :nth-child(4)").className = "dropdown curnav"
 
 [\label _@@ \url] => __[{label} @@ {url}]
+[\label _@@@ \url] => __[{label} @@@ {url}]
 [@@! \project] => {project} _@@ https://github.com/breuleux/{project}
-;; [\maybe\text @@@ \maybe\path] => {text}@@{siteroot}{path}
 
 = Editor support
 
@@ -36,7 +36,7 @@ cmearl => [earlmode.eg]_@@[https://github.com/breuleux/repple/blob/master/src/ea
 
 If you wish to __contribute editor support for an editor which is not
 yet supported, please consult these
-[guidelines]_@@{siteroot}contrib.html#editorsupport.
+[guidelines]_@@@contrib.html#editorsupport.
 
 
 = Syntax highlighting
@@ -47,5 +47,5 @@ Also scattered.
 
 If you wish to __contribute syntax highlighting for a library which is
 currently not supported, please consult these
-[guidelines]_@@{siteroot}contrib.html#syntaxhighlighting.
+[guidelines]_@@@contrib.html#syntaxhighlighting.
 

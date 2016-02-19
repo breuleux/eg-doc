@@ -9,6 +9,7 @@ meta ::
 js :: document.querySelector("#nav-main > ul > :nth-child(1)").className = "curnav arrow"
 
 [\label _@@ \url] => __[{label} @@ {url}]
+[\label _@@@ \url] => __[{label} @@@ {url}]
 [@@! \project] => {project} _@@ https://github.com/breuleux/{project}
 
 __[Earl Grey] is a neat little language that compiles to
@@ -32,7 +33,7 @@ Earl Grey is still in development, be sure to
 [star it on GitHub]_@@https://github.com/breuleux/earl-grey
 to show some support!
 
-Also be sure to check out the [interactive tutorial _@@ {siteroot}repl].
+Also be sure to check out the [interactive tutorial _@@@ repl.html].
 
 
 == What does it look like?
@@ -349,17 +350,17 @@ there's no need for this when you have @@!earl-react:
 
 * Report an issue _@@ https://github.com/breuleux/earl-grey/issues
 
-* Install Earl Grey _@@ {siteroot}use.html
+* Install Earl Grey _@@@ use.html
 
-* Editor/syntax highlighting support _@@ {siteroot}tooling.html
+* Editor/syntax highlighting support _@@@ tooling.html
 
-* Go through the [interactive tutorial _@@ {siteroot}repl]. It
+* Go through the [interactive tutorial _@@@ repl.html]. It
   runs in your browser, no need to install anything!
 
-* See the [documentation _@@ {siteroot}doc.html] for an overview of
+* See the [documentation _@@@ doc.html] for an overview of
   all of EG's features.
 
-* Contribute! _@@ {siteroot}contrib.html
+* Contribute! _@@@ contrib.html
 
 * Follow us on twitter! {twitter}
 

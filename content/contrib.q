@@ -20,8 +20,8 @@ css ::
 
 
 [\label _@@ \url] => __[{label} @@ {url}]
+[\label _@@@ \url] => __[{label} @@@ {url}]
 [@@! \project] => {project} _@@ https://github.com/breuleux/{project}
-;; [\maybe\text @@@ \maybe\path] => {text}@@{siteroot}{path}
 
 
 = Contribute to Earl Grey
@@ -208,7 +208,7 @@ Feel free to do better :\)
 Please follow [the guidelines above]@@[#syntaxhighlighting] for syntax
 highlighting.
 
-You can use [the REPL]@@{siteroot}repl/ as a baseline of what I
+You can use [the REPL]@@@repl.html as a baseline of what I
 believe minimum editor support should be like.
 
 * My convention for indent is 3 spaces. It is an uncommon convention,
