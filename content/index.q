@@ -25,7 +25,7 @@ JavaScript. Here's what it has to offer:
 * A very powerful hygienic [macro _@@ #macrosystem] system!
   * Define your own control structures or DSLs
   * Macros integrate seamlessly with the language
-  * Macro libraries! Test with @@!earl-mocha, build with @@!earl-gulp,
+  * Macro libraries! Test with @@!earl-mocha, build with @@!earl-gulp~,
     make dynamic pages with @@!earl-react, etc.
 * And [much more! _@@ #resources]
 
