@@ -73,7 +73,10 @@
       "defaultBlock": "earlgrey",
       "defaultInline": null
     },
-    "repple": {}
+    "repple": {
+      "language": "earlgrey",
+      "theme": "default"
+    }
   },
   "inject": [],
   "contentRoot": "content",
